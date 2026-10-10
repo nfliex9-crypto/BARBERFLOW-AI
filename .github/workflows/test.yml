@@ -1,7 +1,7 @@
 name: BarberFlow Quality Gate
 on:
   push:
-    branches: [main]
+    branches: [Bot, main]
   pull_request:
 permissions:
   contents: read
