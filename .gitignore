@@ -6,3 +6,7 @@ media/*
 !media/.gitkeep
 *.pyc
 .DS_Store
+
+# Oracle VM runtime secrets and backups
+deploy/oracle/.env
+deploy/oracle/backups/
