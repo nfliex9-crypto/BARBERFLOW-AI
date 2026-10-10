@@ -1,0 +1,58 @@
+name: barberflow
+
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      APP_ENV: production
+      SECRET_KEY: ${BARBERFLOW_SECRET_KEY:?Set BARBERFLOW_SECRET_KEY in .env}
+      BF_DATA_DIR: /data
+      BF_OUTPUT_WIDTH: "720"
+      BF_OUTPUT_HEIGHT: "1280"
+      BF_WORKERS: "1"
+      BF_MAX_UPLOAD_MB: "150"
+      BF_MAX_INPUT_MINUTES: "20"
+      BF_MAX_SALON_STORAGE_MB: "2048"
+      BF_MAX_ACTIVE_PER_SALON: "1"
+    volumes:
+      - salon_media:/data
+    expose:
+      - "8000"
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/api/ready',timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      start_period: 45s
+      retries: 3
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      BARBERFLOW_DOMAIN: ${BARBERFLOW_DOMAIN:?Set BARBERFLOW_DOMAIN in .env}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  salon_media:
+    name: barberflow_salon_media
+  caddy_data:
+    name: barberflow_caddy_data
+  caddy_config:
+    name: barberflow_caddy_config
