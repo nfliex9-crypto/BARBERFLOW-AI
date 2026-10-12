@@ -13,7 +13,7 @@
     const data=await api('/api/bookings');const list=$('bookings');list.replaceChildren();
     if(!data.bookings.length){const p=document.createElement('p');p.textContent='No requests yet. Share your link to start collecting appointments.';list.append(p);return;}
     for(const b of data.bookings){const item=document.createElement('div');item.className='booking';const title=document.createElement('strong');title.textContent=b.customer_name+' · '+b.service_name;const row=document.createElement('div');row.className='item';const time=document.createElement('span');time.textContent=new Date(b.starts_at).toLocaleString('nl-BE',{timeZone:'Europe/Brussels',dateStyle:'medium',timeStyle:'short'});row.append(time,pill(b.state));const email=document.createElement('small');email.textContent=b.customer_email+(b.customer_phone?' · '+b.customer_phone:'');item.append(title,row,email);if(b.state==='pending'){
-      const actions=document.createElement('div');actions.className='actions';for(const s of ['confirmed','declined']){const button=document.createElement('button');button.className=s==='confirmed'?'primary':'secondary';button.textContent=s==='confirmed'?'Confirm':'Decline';button.addEventListener('click',async()=>{try{const result=await api('/api/bookings/'+encodeURIComponent(b.id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({state:s})});notice(result.notification_queued?'Email queued for the private SMTP worker. Delivery is not yet confirmed.':'Status updated. Contact the customer manually; no message was sent.');await Promise.all([bookings(),mailStatus()]);}catch(e){notice(e.message,true);}});actions.append(button);}item.append(actions);}
+      const actions=document.createElement('div');actions.className='actions';for(const s of ['confirmed','declined']){const button=document.createElement('button');button.className=s==='confirmed'?'primary':'secondary';button.textContent=s==='confirmed'?'Confirm':'Decline';button.addEventListener('click',async()=>{try{const result=await api('/api/bookings/'+encodeURIComponent(b.id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({state:s})});notice(result.notification_queued?'Email queued for the private SMTP worker. Delivery is not yet confirmed.':'Status updated. Contact the customer manually; no message was sent.');await Promise.all([bookings(),mailStatus(),metrics()]);}catch(e){notice(e.message,true);}});actions.append(button);}item.append(actions);}
       else if(b.state==='confirmed'){const cancel=document.createElement('button');cancel.className='secondary';cancel.textContent='Cancel';cancel.addEventListener('click',async()=>{try{await api('/api/bookings/'+encodeURIComponent(b.id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({state:'cancelled'})});notice('Cancelled. Contact the customer to inform them.');await bookings();}catch(e){notice(e.message,true);}});item.append(cancel);}list.append(item);}
   }
 
@@ -25,6 +25,13 @@
     input.type='time';input.step='1800';input.value=value||'';
     label.append(input);
     return {label,input};
+  }
+  async function metrics(){
+    const data=await api('/api/bookings/metrics');
+    $('metric-requests').textContent=String(data.requests_total);
+    $('metric-confirmed').textContent=String(data.confirmed);
+    $('metric-upcoming').textContent=String(data.upcoming_confirmed);
+    $('metric-value').textContent='€'+(data.confirmed_service_list_price_cents/100).toFixed(2);
   }
   async function mailStatus(){
     const data=await api('/api/bookings/mail-status');
@@ -85,7 +92,7 @@
   }
 
   async function init(){
-    try{const link=await api('/api/bookings/link');$('public-link').value=location.origin+link.booking_page;await Promise.all([services(),bookings(),hours(),closures(),mailStatus()]);}
+    try{const link=await api('/api/bookings/link');$('public-link').value=location.origin+link.booking_page;await Promise.all([services(),bookings(),hours(),closures(),mailStatus(),metrics()]);}
     catch(e){notice('Please sign in to BarberFlow first. '+e.message,true);return;}
     const currentDate=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Brussels',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
     $('closure-day').min=currentDate;
