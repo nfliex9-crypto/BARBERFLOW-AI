@@ -55,3 +55,32 @@ Open `http://127.0.0.1:8000` for the NIZO site. Visit `/nizo/setup` to create th
 GitHub Actions PR checks compile Python and JavaScript, exercise FastAPI with HTTP requests and actually render MP4 using FFmpeg. Vercel deployment build ready is **not** evidence of a running backend. Keep these statuses separate.
 
 **Do not market it as an official live booking site until all relevant checks and owner authorizations are complete.**
+
+## 2026-10-12 — owner-provided opening hours and social links
+
+The project contact confirmed this operating schedule, which takes precedence over conflicting business-directory entries:
+- Monday: closed
+- Tuesday–Saturday: 10:00–19:00
+- Sunday: 10:00–17:00
+
+The public preview now displays these hours even without a connected booking API, and the backend returns the same defaults until the owner updates them. Owner-configured hours override the preview defaults after onboarding.
+
+The owner/project contact provided links for Instagram and TikTok as opaque Google redirects. They were included **verbatim** in the site but could not be resolved or verified to a canonical `instagram.com/...` or `tiktok.com/@...` target by the developer's available lookup. Before commercial launch, obtain and verify both direct profile URLs, then replace the redirects to avoid link rot and wrong-account destinations.
+
+## Railway hosting handoff
+
+The previously connected Railway Free workspace could not provision another project because of its resource limit. Do not attempt to bypass eligibility/usage restrictions through repeated free-trial accounts. A legitimate new independent workspace/account with an appropriate paid plan or a compliant hosting alternative is acceptable.
+
+When the intended Railway account is connected and has capacity, deploy branch `nizo-hours-social-v2` (after review) using Dockerfile, persistent volume mounted `/data`, and production env variables:
+- `APP_ENV=production`
+- `BF_PUBLIC_SITE=nizo`
+- `BF_DATA_DIR=/data`
+- `SECRET_KEY=<generate strong unique secret privately>`
+- `BF_NIZO_SETUP_CODE=<one-time random 32+ character code, never in git>`
+- `BF_ALLOW_OPEN_SIGNUP=false`
+- `BF_SMTP_ENABLED=false` initially (enable only after verified real worker/provider)
+- `BF_WORKERS=1` initially due SQLite and media processing assumptions
+
+Enable domain/HTTPS and verify /api/ready, /nizo and /app externally. Have the owner onboard through /nizo/setup, confirm services/prices and actual operating hours, and publish booking only after GDPR/compliance and notifications are arranged.
+
+**Infrastructure note:** Railway trial stateful volumes may be deleted after trial credits expire; use an ongoing eligible plan for customer bookings and maintain offsite backup/restore tests. Current Vercel Hobby deployment is development-only, not a commercial production host.
