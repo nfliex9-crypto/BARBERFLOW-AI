@@ -43,6 +43,11 @@ def test_nizo_preview_owner_onboarding_and_real_booking(monkeypatch):
         assert not not_yet["booking_enabled"]
         assert not_yet["salon_id"] is None
         assert len(not_yet["services"])==3
+        hidden_salon=client.get("/api/auth/me").json()["user"]["salon_id"]
+        hidden_service=not_yet["services"][0]["id"]
+        assert visitor.get(f"/api/public/salons/{hidden_salon}/slots",params={
+            "service_id":hidden_service,"day":"2026-12-16"
+        }).status_code==403
         assert all(s["price_cents"]==0 for s in not_yet["services"])
         assert client.get("/api/nizo/admin").status_code==200
         hours=client.get("/api/bookings/hours").json()["hours"]
@@ -88,6 +93,9 @@ def test_nizo_preview_owner_onboarding_and_real_booking(monkeypatch):
         })
         assert hidden.status_code==200
         assert not visitor.get("/api/nizo/site").json()["booking_enabled"]
+        assert visitor.get(f"/api/public/salons/{salon_id}/slots",params={
+            "service_id":service,"day":when.date().isoformat()
+        }).status_code==403
         assert client.post("/api/nizo/setup",json={
             "setup_code":"nizo-2026-private-test-setup-code-very-long",
             "email":"second-owner@example.invalid",
