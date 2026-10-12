@@ -3,6 +3,7 @@ from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 import re
 from .scheduling import init_schedule, hours_for, ensure_hours, valid_slot, slots_for, validate_hours, ZONE
+from .notifications import init_outbox, enqueue, config_ready
 
 from fastapi import Depends, HTTPException, Request
 from pydantic import BaseModel, Field
@@ -93,6 +94,7 @@ CREATE TABLE IF NOT EXISTS bf_bookings (
 CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, starts_at, ends_at);
 """)
         init_schedule(con)
+        init_outbox(con)
 
     def get_salon(con, sid):
         salon = con.execute("SELECT id,name FROM salons WHERE id=?", (sid,)).fetchone()
@@ -236,8 +238,26 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
             con.execute("INSERT INTO bf_bookings VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
                         (bid, salon_id, body.service_id, name, email, phone,
                          start, end, "pending", t, t, t))
+            owner = con.execute("""SELECT u.email FROM users u JOIN salons s ON s.owner_id=u.id
+                WHERE s.id=?""", (salon_id,)).fetchone()
+            salon = get_salon(con, salon_id)
+            queued = enqueue(con,salon_id,bid,"new_request",owner["email"],
+                             "New appointment request — " + salon["name"],
+                             "A customer requested " + svc["name"] + " at " +
+                             body.starts_at.astimezone(ZONE).strftime("%d/%m/%Y %H:%M") +
+                             " (Brussels). Sign in to BarberFlow to review it. The booking is NOT confirmed.")
         return {"id": bid, "state": "pending", "starts_at": start,
+                "owner_notification_queued": queued,
                 "message": "Request received; your appointment is NOT confirmed yet. The salon must contact you."}
+
+
+    @app.get("/api/bookings/mail-status")
+    def admin_mail_status(user=Depends(get_user)):
+        with connect() as con:
+            rows = con.execute("""SELECT state,COUNT(*) AS count FROM bf_mail_outbox
+                WHERE salon_id=? GROUP BY state""", (user["salon_id"],)).fetchall()
+        return {"email_queue_enabled": config_ready(), "states": [dict(r) for r in rows],
+                "note": "smtp_accepted means accepted by the SMTP provider, not delivered to the inbox"}
 
     @app.get("/api/bookings")
     def admin_bookings(user=Depends(get_user)):
@@ -247,7 +267,8 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
               FROM bf_bookings b JOIN bf_services s ON s.id=b.service_id
               WHERE b.salon_id=? ORDER BY b.starts_at DESC LIMIT 200""",
               (user["salon_id"],)).fetchall()
-        return {"bookings": [dict(r) for r in rows], "auto_confirm": False, "notifications_connected": False}
+        return {"bookings": [dict(r) for r in rows], "auto_confirm": False,
+                "email_queue_enabled": config_ready(), "worker_health_verified": False}
 
     @app.patch("/api/bookings/{booking_id}")
     def update_booking(booking_id: str, body: BookingState, user=Depends(get_user)):
@@ -273,4 +294,16 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
                     raise HTTPException(409, "Conflicting confirmed appointment")
             result = con.execute("""UPDATE bf_bookings SET state=?, updated_at=? WHERE id=? AND salon_id=? RETURNING id,state""",
                                  (body.state, now(), booking_id, user["salon_id"])).fetchone()
-        return {**dict(result), "notifications_sent": False}
+            starts_local = datetime.fromisoformat(b["starts_at"].replace("Z","+00:00")).astimezone(ZONE).strftime("%d/%m/%Y %H:%M")
+            if body.state == "confirmed":
+                subject = "Appointment confirmed — " + user["salon"]
+                content = "Your appointment on " + starts_local + " in Brussels is confirmed by " + user["salon"] + "."
+            elif body.state == "cancelled":
+                subject = "Appointment cancelled — " + user["salon"]
+                content = "Your appointment on " + starts_local + " with " + user["salon"] + " was cancelled. Please contact the salon."
+            else:
+                subject = "Appointment request declined — " + user["salon"]
+                content = "Your appointment request for " + starts_local + " could not be accepted. Please contact " + user["salon"] + "."
+            queued = enqueue(con,user["salon_id"],booking_id,body.state,b["customer_email"],subject,content)
+        return {**dict(result), "notification_queued": queued,
+                "notifications_sent": False, "email_delivery": "outbox_pending" if queued else "manual_contact_required"}
