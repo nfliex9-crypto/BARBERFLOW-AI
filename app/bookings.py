@@ -16,6 +16,12 @@ class ServiceNew(BaseModel):
 class ServiceState(BaseModel):
     active: bool
 
+class ServiceEdit(BaseModel):
+    name: str = Field(min_length=2, max_length=65)
+    duration_minutes: int = Field(ge=15, le=180, multiple_of=15)
+    price_cents: int = Field(ge=0, le=250000)
+
+
 
 class WorkHoursUpdate(BaseModel):
     enabled: bool
@@ -106,6 +112,25 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
                         (sid, user["salon_id"], body.name.strip(), body.duration_minutes, body.price_cents, 1, now()))
         return {"id": sid, "name": body.name.strip(), "duration_minutes": body.duration_minutes,
                 "price_cents": body.price_cents, "active": True}
+
+    @app.put("/api/bookings/services/{service_id}")
+    def edit_service(service_id: str,body: ServiceEdit,user=Depends(get_user)):
+        # Preserve the terms of all past appointments; later edits must create a new service version.
+        with connect() as con:
+            con.execute("BEGIN IMMEDIATE")
+            service=con.execute("SELECT id FROM bf_services WHERE id=? AND salon_id=?",
+                                (service_id,user["salon_id"])).fetchone()
+            if service is None:
+                raise HTTPException(404,"Service not found")
+            used=con.execute("SELECT 1 FROM bf_bookings WHERE service_id=? LIMIT 1",
+                             (service_id,)).fetchone()
+            if used:
+                raise HTTPException(409,"Service has bookings. Disable it and add a new service instead.")
+            con.execute("""UPDATE bf_services SET name=?,duration_minutes=?,price_cents=?
+                WHERE id=? AND salon_id=?""",
+                (body.name.strip(),body.duration_minutes,body.price_cents,service_id,user["salon_id"]))
+        return {"id":service_id,"name":body.name.strip(),"duration_minutes":body.duration_minutes,
+                "price_cents":body.price_cents,"saved":True}
 
     @app.patch("/api/bookings/services/{service_id}")
     def change_service(service_id: str, body: ServiceState, user=Depends(get_user)):
