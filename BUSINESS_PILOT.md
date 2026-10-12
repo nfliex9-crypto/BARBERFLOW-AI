@@ -27,6 +27,10 @@ Prices do not include automatic social posting, AI messages or automated billing
 4. Check if prospects react better to 'more bookings and content' than AI-first branding; do not interpret compliments as confirmed sales.
 5. Require written footage permissions, legal music rights, clear privacy notice and a retention/deletion policy before client deployment.
 
+## Private beta onboarding
+- Production registration is disabled by default. To onboard a test salon deliberately, temporarily configure `BF_ALLOW_OPEN_SIGNUP=true` and turn it off immediately after completing registration. This is a gate, not invitation-token verification.
+- The booking owner link is now in the Studio sidebar. The public link still accepts requests only, not confirmed appointments.
+
 ## Release blockers
 - Production HTTPS, strong SECRET_KEY, persistent storage, backup & restore tests, abuse protection, actual legal/GDPR readiness.
 - Scheduling pilot uses hardcoded Tue-Sat 9–18 and lacks holidays, breaks, staff calendars, rescheduling, external calendar sync, messages and payment deposits.
