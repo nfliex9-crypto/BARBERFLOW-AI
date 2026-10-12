@@ -38,6 +38,14 @@ DEFAULT_NAMES = (
     ("Baard bijwerken", 30),
 )
 
+# Opening hours confirmed by the BARBER NIZO project contact.
+# weekday: Monday=0 through Sunday=6. Staff breaks remain owner-managed.
+CONFIRMED_PUBLIC_HOURS = [
+    {"weekday": day, "enabled": int(day != 0), "opens": "10:00",
+     "closes": "17:00" if day == 6 else "19:00"}
+    for day in range(7)
+]
+
 
 def install_nizo(app, connect, get_user, throttle, uid, now, salted, login_cookie, root):
     with connect() as con:
@@ -73,7 +81,7 @@ CREATE TABLE IF NOT EXISTS bf_nizo_site(
             salon=site_row(con)
             if not salon:
                 return {"configured":False,"published":False,"booking_enabled":False,
-                        "salon_id":None,"services":[],"hours":[],
+                        "salon_id":None,"services":[],"hours":CONFIRMED_PUBLIC_HOURS,
                         "note":"Website preview only. Online appointment requests not active."}
             services=con.execute("""SELECT id,name,duration_minutes,price_cents
                 FROM bf_services WHERE salon_id=? AND active=1 ORDER BY created_at""",
@@ -129,11 +137,10 @@ CREATE TABLE IF NOT EXISTS bf_nizo_site(
                   [(uid(),salon_id,title,minutes,0,now()) for title,minutes in DEFAULT_NAMES])
                 ensure_hours(con,salon_id)
                 # Tentative schedule only, owner must verify before enabling bookings.
-                for day in range(7):
-                    enabled=int(day in (1,2,3,4,5,6))
+                for day in CONFIRMED_PUBLIC_HOURS:
                     con.execute("""UPDATE bf_work_hours
-                      SET enabled=?,opens='10:00',closes=? WHERE salon_id=? AND weekday=?""",
-                      (enabled,"17:00" if day==6 else "19:00",salon_id,day))
+                      SET enabled=?,opens=?,closes=? WHERE salon_id=? AND weekday=?""",
+                      (day["enabled"], day["opens"], day["closes"], salon_id, day["weekday"]))
                 con.execute("""INSERT INTO bf_nizo_site(singleton,salon_id,published,created_at)
                      VALUES(1,?,0,?)""",(salon_id,now()))
         except sqlite3.IntegrityError:
