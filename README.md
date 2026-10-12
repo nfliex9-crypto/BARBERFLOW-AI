@@ -104,3 +104,10 @@ No artificial follower/like metrics, invented posts, or simulated renders. Rende
 ## License
 
 MIT. Brand/identity and example creative assets are placeholders; verify availability of the product name before a commercial launch.
+
+
+## Business pilot (booking requests + video editing)
+
+On the [business-pilot-v1](https://github.com/nfliex9-crypto/BARBERFLOW-AI/tree/business-pilot-v1) development branch, salon owners can also open **/static/bookings.html** after signing in, create services, and copy a link to the public **/static/book.html?salon=...** request form. Bookings remain pending until owner confirmation. Confirming a request does **not** send an email or SMS. Default pilot hours are Tuesday–Saturday 09:00–18:00 in Europe/Brussels.
+
+See [BUSINESS_PILOT.md](BUSINESS_PILOT.md) for pricing experiments, sales validation, safety gaps and setup. Existing FFmpeg studio remains available from **/**. This is a **development pilot**, not a production booking service or operational AI receptionist.

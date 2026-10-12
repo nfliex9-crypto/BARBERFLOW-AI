@@ -27,5 +27,7 @@ jobs:
         run: |
           python -m compileall -q app
           node --check app/static/app.js
+          node --check app/static/book.js
+          node --check app/static/bookings.js
       - name: Real MP4 integration suite
         run: pytest -q
