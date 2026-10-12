@@ -10,6 +10,9 @@ services:
       BF_OUTPUT_WIDTH: "1080"
       BF_OUTPUT_HEIGHT: "1920"
       BF_WORKERS: "2"
+      BF_SMTP_ENABLED: ${BF_SMTP_ENABLED:-false}
+      BF_SMTP_HOST: ${BF_SMTP_HOST:-}
+      BF_SMTP_FROM: ${BF_SMTP_FROM:-}
     volumes:
       - ./media:/data
     restart: unless-stopped
