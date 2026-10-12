@@ -199,8 +199,9 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
             salon = get_salon(con, salon_id)
             services = con.execute("SELECT id,name,duration_minutes,price_cents FROM bf_services WHERE salon_id=? AND active=1 ORDER BY created_at",
                                    (salon_id,)).fetchall()
+            schedule = hours_for(con, salon_id)
         return {"name": salon["name"], "services": [dict(s) for s in services],
-                "timezone": "Europe/Brussels", "schedule": hours_for(con, salon_id),
+                "timezone": "Europe/Brussels", "schedule": schedule,
                 "booking_mode": "request_only"}
 
     @app.get("/api/public/salons/{salon_id}/slots")
