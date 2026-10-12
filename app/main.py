@@ -458,6 +458,15 @@ def calendar_export(user=Depends(get_user)):
 from .bookings import install_booking_routes
 install_booking_routes(app, connect, get_user, throttle, uid, now)
 
+from .nizo_site import install_nizo
+install_nizo(app, connect, get_user, throttle, uid, now, salted, login_cookie, ROOT)
+
 app.mount('/static',StaticFiles(directory=ROOT/'app'/'static'),name='static')
 @app.get('/')
-def home():return FileResponse(ROOT/'app'/'static'/'index.html')
+def home():
+    landing = 'nizo.html' if os.getenv('BF_PUBLIC_SITE','').strip().lower() == 'nizo' else 'index.html'
+    return FileResponse(ROOT/'app'/'static'/landing)
+
+@app.get('/app',include_in_schema=False)
+def owner_portal():
+    return FileResponse(ROOT/'app'/'static'/'index.html')

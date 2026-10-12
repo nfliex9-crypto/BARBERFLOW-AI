@@ -5,9 +5,65 @@
   async function api(path,options={}){const r=await fetch(path,{credentials:'same-origin',...options});let j={};try{j=await r.json();}catch{}if(!r.ok)throw new Error(j.detail||'Request failed');return j;}
   const pill=s=>{const span=document.createElement('span');span.className='pill '+s;span.textContent=s;return span;};
   async function services(){
-    const data=await api('/api/bookings/services');const list=$('services');list.replaceChildren();
-    if(!data.services.length){const p=document.createElement('p');p.textContent='Create your first service to activate your public booking page.';list.append(p);}
-    for(const s of data.services){const item=document.createElement('div');item.className='item';const d=document.createElement('div');const strong=document.createElement('strong');strong.textContent=s.name;const meta=document.createElement('small');meta.textContent=s.duration_minutes+' min · €'+(s.price_cents/100).toFixed(2);d.append(strong,meta);const button=document.createElement('button');button.className='secondary';button.textContent=s.active?'Disable':'Enable';button.addEventListener('click',async()=>{try{await api('/api/bookings/services/'+encodeURIComponent(s.id),{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({active:!s.active})});await services();}catch(e){notice(e.message,true);}});item.append(d,button);list.append(item);}
+    const data=await api('/api/bookings/services');
+    const list=$('services');list.replaceChildren();
+    if(!data.services.length){
+      const p=document.createElement('p');
+      p.textContent='Add your first service. Prices can be updated before the first booking.';
+      list.append(p);
+    }
+    for(const s of data.services){
+      const card=document.createElement('div');card.className='booking';
+      const summary=document.createElement('div');summary.className='item';
+      const description=document.createElement('div');
+      const title=document.createElement('strong');title.textContent=s.name;
+      const meta=document.createElement('small');
+      meta.textContent=s.duration_minutes+' min · '+
+        (s.price_cents>0?'€'+(s.price_cents/100).toFixed(2):'Price on request');
+      description.append(title,meta);
+      const controls=document.createElement('div');controls.className='actions';
+      const edit=document.createElement('button');edit.className='secondary';edit.type='button';edit.textContent='Edit';
+      const toggle=document.createElement('button');toggle.className='secondary';
+      toggle.type='button';toggle.textContent=s.active?'Disable':'Enable';
+      toggle.addEventListener('click',async()=>{
+        try{
+          await api('/api/bookings/services/'+encodeURIComponent(s.id),{
+            method:'PATCH',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({active:!s.active})
+          });await services();
+        }catch(error){notice(error.message,true);}
+      });
+      controls.append(edit,toggle);summary.append(description,controls);card.append(summary);
+      const form=document.createElement('form');form.className='stack';form.hidden=true;
+      const newName=document.createElement('input');newName.value=s.name;newName.maxLength=65;newName.minLength=2;newName.required=true;
+      const duration=document.createElement('select');
+      [15,30,45,60,75,90,105,120,150,180].forEach(n=>duration.add(new Option(n+' minutes',String(n))));
+      duration.value=String(s.duration_minutes);
+      const price=document.createElement('input');price.type='number';price.step='0.01';price.min='0';price.max='2500';
+      price.value=(s.price_cents/100).toFixed(2);price.required=true;
+      const field=(labelText,control)=>{
+        const label=document.createElement('label');label.textContent=labelText;label.append(control);return label;
+      };
+      const save=document.createElement('button');save.className='primary';save.type='submit';save.textContent='Save service';
+      form.append(field('Service name',newName),field('Duration',duration),field('Price in € (0 = ask in salon)',price),save);
+      edit.addEventListener('click',()=>{form.hidden=!form.hidden;});
+      form.addEventListener('submit',async event=>{
+        event.preventDefault();save.disabled=true;
+        try{
+          await api('/api/bookings/services/'+encodeURIComponent(s.id),{
+            method:'PUT',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+              name:newName.value,duration_minutes:Number(duration.value),
+              price_cents:Math.round(Number(price.value)*100)
+            })
+          });
+          notice('Service updated. Verify the public site before accepting bookings.');
+          await services();
+        }catch(error){notice(error.message,true);}
+        finally{save.disabled=false;}
+      });
+      card.append(form);list.append(card);
+    }
   }
   async function bookings(){
     const data=await api('/api/bookings');const list=$('bookings');list.replaceChildren();
