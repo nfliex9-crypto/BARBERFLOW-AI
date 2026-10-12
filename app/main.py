@@ -354,7 +354,8 @@ def account_export(user=Depends(get_user)):
         actions=[dict(r) for r in con.execute('SELECT * FROM activity WHERE salon_id=? ORDER BY created_at',(user['salon_id'],)).fetchall()]
         booking_requests=[dict(r) for r in con.execute('SELECT * FROM bf_bookings WHERE salon_id=? ORDER BY starts_at',(user['salon_id'],)).fetchall()]
         booking_services=[dict(r) for r in con.execute('SELECT * FROM bf_services WHERE salon_id=? ORDER BY created_at',(user['salon_id'],)).fetchall()]
-    return {'user':user,'projects':projects,'calendar':plans,'activity':actions,'booking_requests':booking_requests,'booking_services':booking_services,'note':'Video binary files must be downloaded separately from their project pages.'}
+        email_events=[dict(r) for r in con.execute('SELECT * FROM bf_mail_outbox WHERE salon_id=? ORDER BY created_at',(user['salon_id'],)).fetchall()]
+    return {'user':user,'projects':projects,'calendar':plans,'activity':actions,'booking_requests':booking_requests,'booking_services':booking_services,'email_events':email_events,'note':'Video binary files must be downloaded separately from their project pages.'}
 
 @app.post('/api/account/delete')
 def account_delete(body:AccountRemoval,response:Response,user=Depends(get_user)):
