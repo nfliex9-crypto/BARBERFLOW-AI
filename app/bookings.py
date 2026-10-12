@@ -178,10 +178,17 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
                 "timezone": "Europe/Brussels", "schedule": schedule,
                 "booking_mode": "request_only"}
 
+    def enforce_branded_publication(con, salon_id):
+        # Closing a branded site must also close its underlying public API.
+        page = con.execute("SELECT published FROM bf_nizo_site WHERE salon_id=?", (salon_id,)).fetchone()
+        if page and not page["published"]:
+            raise HTTPException(403,"Online bookings are paused for this salon")
+
     @app.get("/api/public/salons/{salon_id}/slots")
     def public_slots(salon_id: str, service_id: str, day: date):
         with connect() as con:
             get_salon(con, salon_id)
+            enforce_branded_publication(con,salon_id)
             svc = find_service(con, salon_id, service_id)
             starts = slots_for(con, salon_id, day, svc["duration_minutes"], conflict)
         return {"slots": starts, "timezone": "Europe/Brussels", "booking_mode": "request_only"}
@@ -197,6 +204,7 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
         with connect() as con:
             con.execute("BEGIN IMMEDIATE")
             get_salon(con, salon_id)
+            enforce_branded_publication(con,salon_id)
             svc = find_service(con, salon_id, body.service_id)
             start, end = valid_slot(con, salon_id, body.starts_at, svc["duration_minutes"])
             if conflict(con, salon_id, start, end):
