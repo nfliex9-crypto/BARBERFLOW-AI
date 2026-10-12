@@ -2,6 +2,7 @@
 from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 import re
+from .scheduling import init_schedule, hours_for, ensure_hours, valid_slot, slots_for, validate_hours, ZONE
 
 from fastapi import Depends, HTTPException, Request
 from pydantic import BaseModel, Field
@@ -20,6 +21,19 @@ class ServiceNew(BaseModel):
 
 class ServiceState(BaseModel):
     active: bool
+
+
+class WorkHoursUpdate(BaseModel):
+    enabled: bool
+    opens: str = Field(min_length=5, max_length=5)
+    closes: str = Field(min_length=5, max_length=5)
+    break_start: str | None = None
+    break_end: str | None = None
+
+
+class ClosingDate(BaseModel):
+    day: date
+    reason: str = Field(default="", max_length=120)
 
 
 class BookingRequest(BaseModel):
@@ -78,11 +92,13 @@ CREATE TABLE IF NOT EXISTS bf_bookings (
  state TEXT NOT NULL, consent_at TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, starts_at, ends_at);
 """)
+        init_schedule(con)
 
     def get_salon(con, sid):
         salon = con.execute("SELECT id,name FROM salons WHERE id=?", (sid,)).fetchone()
         if not salon:
             raise HTTPException(404, "Salon not found")
+        ensure_hours(con, sid)
         return salon
 
     def find_service(con, sid, service_id):
@@ -126,6 +142,57 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
             raise HTTPException(404, "Service not found")
         return dict(updated)
 
+
+    @app.get("/api/bookings/hours")
+    def admin_hours(user=Depends(get_user)):
+        with connect() as con:
+            return {"hours": hours_for(con, user["salon_id"]), "timezone": "Europe/Brussels"}
+
+    @app.put("/api/bookings/hours/{weekday}")
+    def update_hours(weekday: int, body: WorkHoursUpdate, user=Depends(get_user)):
+        if not 0 <= weekday <= 6:
+            raise HTTPException(400, "Weekday must be 0=Monday through 6=Sunday")
+        validate_hours(body.opens, body.closes, body.break_start, body.break_end, body.enabled)
+        with connect() as con:
+            ensure_hours(con, user["salon_id"])
+            con.execute("""UPDATE bf_work_hours
+                SET enabled=?,opens=?,closes=?,break_start=?,break_end=?
+                WHERE salon_id=? AND weekday=?""",
+                (int(body.enabled),body.opens,body.closes,body.break_start,body.break_end,
+                 user["salon_id"],weekday))
+        return {"weekday": weekday, "saved": True,
+                "warning": "Existing confirmed bookings are not cancelled automatically"}
+
+    @app.get("/api/bookings/closures")
+    def admin_closures(user=Depends(get_user)):
+        with connect() as con:
+            rows = con.execute("""SELECT day,reason FROM bf_closed_dates WHERE salon_id=?
+                ORDER BY day LIMIT 365""", (user["salon_id"],)).fetchall()
+        return {"closures": [dict(r) for r in rows]}
+
+    @app.post("/api/bookings/closures", status_code=201)
+    def add_closure(body: ClosingDate, user=Depends(get_user)):
+        today = datetime.now(ZONE).date()
+        if body.day < today or body.day > today + timedelta(days=730):
+            raise HTTPException(400, "Closure date outside permitted range")
+        with connect() as con:
+            get_salon(con, user["salon_id"])
+            con.execute("""INSERT INTO bf_closed_dates(salon_id,day,reason) VALUES(?,?,?)
+                ON CONFLICT(salon_id,day) DO UPDATE SET reason=excluded.reason""",
+                (user["salon_id"],body.day.isoformat(),body.reason.strip()))
+        return {"day": body.day.isoformat(), "saved": True,
+                "warning": "Contact customers with existing confirmed bookings manually"}
+
+    @app.delete("/api/bookings/closures/{day}")
+    def remove_closure(day: date, user=Depends(get_user)):
+        with connect() as con:
+            result = con.execute("""DELETE FROM bf_closed_dates
+                WHERE salon_id=? AND day=? RETURNING day""",
+                (user["salon_id"],day.isoformat())).fetchone()
+        if result is None:
+            raise HTTPException(404, "Closure not found")
+        return {"removed": True}
+
     @app.get("/api/public/salons/{salon_id}")
     def public_salon(salon_id: str):
         with connect() as con:
@@ -133,27 +200,15 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
             services = con.execute("SELECT id,name,duration_minutes,price_cents FROM bf_services WHERE salon_id=? AND active=1 ORDER BY created_at",
                                    (salon_id,)).fetchall()
         return {"name": salon["name"], "services": [dict(s) for s in services],
-                "timezone": "Europe/Brussels", "open_days": ["Tue","Wed","Thu","Fri","Sat"],
-                "hours": "09:00–18:00", "booking_mode": "request_only"}
+                "timezone": "Europe/Brussels", "schedule": hours_for(con, salon_id),
+                "booking_mode": "request_only"}
 
     @app.get("/api/public/salons/{salon_id}/slots")
     def public_slots(salon_id: str, service_id: str, day: date):
         with connect() as con:
             get_salon(con, salon_id)
             svc = find_service(con, salon_id, service_id)
-            if day.weekday() not in OPEN_WEEKDAYS:
-                return {"slots": [], "timezone": "Europe/Brussels"}
-            starts = []
-            current = datetime.combine(day, OPEN, tzinfo=ZONE)
-            ending = datetime.combine(day, CLOSE, tzinfo=ZONE)
-            while current + timedelta(minutes=svc["duration_minutes"]) <= ending:
-                try:
-                    start, end = slot_start(current, svc["duration_minutes"])
-                    if not conflict(con, salon_id, start, end):
-                        starts.append({"starts_at": current.isoformat(), "label": current.strftime("%H:%M")})
-                except HTTPException:
-                    pass
-                current += timedelta(minutes=30)
+            starts = slots_for(con, salon_id, day, svc["duration_minutes"], conflict)
         return {"slots": starts, "timezone": "Europe/Brussels", "booking_mode": "request_only"}
 
     @app.post("/api/public/salons/{salon_id}/requests", status_code=201)
@@ -168,7 +223,7 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
             con.execute("BEGIN IMMEDIATE")
             get_salon(con, salon_id)
             svc = find_service(con, salon_id, body.service_id)
-            start, end = slot_start(body.starts_at, svc["duration_minutes"])
+            start, end = valid_slot(con, salon_id, body.starts_at, svc["duration_minutes"])
             if conflict(con, salon_id, start, end):
                 raise HTTPException(409, "This slot is already confirmed")
             duplicate = con.execute("""SELECT id FROM bf_bookings WHERE salon_id=? AND service_id=?
@@ -208,6 +263,11 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
                     raise HTTPException(409, "Only pending requests may be confirmed")
                 if datetime.strptime(b["starts_at"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc) < datetime.now(timezone.utc):
                     raise HTTPException(409, "Cannot confirm a past appointment")
+                service = con.execute("SELECT duration_minutes FROM bf_services WHERE id=? AND salon_id=?",
+                                      (b["service_id"],user["salon_id"])).fetchone()
+                valid_slot(con, user["salon_id"],
+                           datetime.fromisoformat(b["starts_at"].replace("Z","+00:00")),
+                           service["duration_minutes"])
                 if conflict(con, user["salon_id"], b["starts_at"], b["ends_at"]):
                     raise HTTPException(409, "Conflicting confirmed appointment")
             result = con.execute("""UPDATE bf_bookings SET state=?, updated_at=? WHERE id=? AND salon_id=? RETURNING id,state""",
