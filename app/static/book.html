@@ -1,3 +1,59 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><meta name="theme-color" content="#10131b"><title>Book an appointment · BarberFlow</title><link rel="stylesheet" href="/static/bookings.css"><script src="/static/book.js" defer></script></head>
-<body><main class="shell narrow"><header class="head"><a class="brand" href="/">✦ BARBERFLOW</a><span class="eyebrow">BOOKINGS · BELGIUM</span></header><section class="hero"><div class="kicker">PERSONAL BOOKING EXPERIENCE</div><h1>Fresh cut.<br><em>Easy booking.</em></h1><p id="subtitle">Choose a service and request your preferred time.</p></section><section class="panel"><div id="notice" role="status" aria-live="polite" hidden></div><h2 id="salon-name">Your salon</h2><form id="booking-form" class="stack"><label>Service<select id="service" required><option value="">Loading services…</option></select></label><label>Preferred day<input type="date" id="date" required></label><div><label>Available times</label><div id="times" class="time-grid" role="group" aria-label="Available times"></div><small>Times shown in Europe/Brussels. This is a booking <strong>request</strong>, not an automatic confirmation.</small></div><div class="two-col"><label>Your name<input id="name" autocomplete="name" maxlength="70" required minlength="2" placeholder="Your name"></label><label>Email address<input id="email" type="email" autocomplete="email" maxlength="200" required placeholder="you@example.com"></label></div><label>Phone (optional)<input id="phone" type="tel" autocomplete="tel" maxlength="35" placeholder="+32 …"></label><label class="consent"><input id="privacy" type="checkbox" required><span>I agree that the salon may store my contact details to handle this appointment request. The salon will contact me to confirm.</span></label><button id="submit" class="primary" type="submit" disabled>Send booking request →</button><small>No payment is taken. No appointment is confirmed automatically.</small></form></section><footer>Powered by BarberFlow · Pilot booking experience</footer></main></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#10131b">
+  <title>Book an appointment · BarberFlow</title>
+  <link rel="stylesheet" href="/static/bookings.css">
+  <script src="/static/book.js" defer></script>
+</head>
+<body>
+<main class="shell narrow">
+  <header class="head">
+    <a class="brand" href="/">✦ BARBERFLOW</a>
+    <label style="max-width:130px">
+      <span data-i18n="language">Language</span>
+      <select id="language" aria-label="Language">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="nl">Nederlands</option>
+      </select>
+    </label>
+  </header>
+  <section class="hero">
+    <div class="kicker" data-i18n="intro">PERSONAL BOOKING EXPERIENCE</div>
+    <h1><span data-i18n="headline1">Fresh cut.</span><br><em data-i18n="headline2">Easy booking.</em></h1>
+    <p id="subtitle" data-i18n="subtitle">Choose a service and request your preferred time.</p>
+  </section>
+  <section class="panel">
+    <div id="notice" role="status" aria-live="polite" hidden></div>
+    <h2 id="salon-name">Your salon</h2>
+    <form id="booking-form" class="stack">
+      <label><span data-i18n="service">Service</span>
+        <select id="service" required><option value="">Loading services…</option></select>
+      </label>
+      <label><span data-i18n="day">Preferred day</span><input type="date" id="date" required></label>
+      <div>
+        <label data-i18n="times">Available times</label>
+        <div id="times" class="time-grid" role="group" aria-label="Available times"></div>
+        <small data-i18n="requestWarning">Times shown in Europe/Brussels. This is a booking request, not an automatic confirmation.</small>
+      </div>
+      <div class="two-col">
+        <label><span data-i18n="name">Your name</span><input id="name" autocomplete="name" maxlength="70" required minlength="2" placeholder="Your name"></label>
+        <label><span data-i18n="email">Email address</span><input id="email" type="email" autocomplete="email" maxlength="200" required placeholder="you@example.com"></label>
+      </div>
+      <label><span data-i18n="phone">Phone (optional)</span><input id="phone" type="tel" autocomplete="tel" maxlength="35" placeholder="+32 …"></label>
+      <label class="consent">
+        <input id="privacy" type="checkbox" required>
+        <span data-i18n="consent">I agree that the salon may store my contact details to handle this appointment request. The salon will contact me to confirm.</span>
+      </label>
+      <button id="submit" class="primary" type="submit" disabled data-i18n="submit">Send booking request →</button>
+      <small data-i18n="disclaimer">No payment is taken. No appointment is confirmed automatically.</small>
+    </form>
+  </section>
+  <footer data-i18n="footer">Powered by BarberFlow · Pilot booking experience</footer>
+</main>
+</body>
+</html>
