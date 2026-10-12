@@ -350,7 +350,9 @@ def account_export(user=Depends(get_user)):
         projects=[dict(r) for r in con.execute('SELECT * FROM projects WHERE salon_id=? ORDER BY created_at',(user['salon_id'],)).fetchall()]
         plans=[dict(r) for r in con.execute('SELECT * FROM scheduled_posts WHERE salon_id=? ORDER BY scheduled_at',(user['salon_id'],)).fetchall()]
         actions=[dict(r) for r in con.execute('SELECT * FROM activity WHERE salon_id=? ORDER BY created_at',(user['salon_id'],)).fetchall()]
-    return {'user':user,'projects':projects,'calendar':plans,'activity':actions,'note':'Video binary files must be downloaded separately from their project pages.'}
+        booking_requests=[dict(r) for r in con.execute('SELECT * FROM bf_bookings WHERE salon_id=? ORDER BY starts_at',(user['salon_id'],)).fetchall()]
+        booking_services=[dict(r) for r in con.execute('SELECT * FROM bf_services WHERE salon_id=? ORDER BY created_at',(user['salon_id'],)).fetchall()]
+    return {'user':user,'projects':projects,'calendar':plans,'activity':actions,'booking_requests':booking_requests,'booking_services':booking_services,'note':'Video binary files must be downloaded separately from their project pages.'}
 
 @app.post('/api/account/delete')
 def account_delete(body:AccountRemoval,response:Response,user=Depends(get_user)):
@@ -449,6 +451,9 @@ def calendar_export(user=Depends(get_user)):
         lines+=['BEGIN:VEVENT','UID:'+row['id']+'@barberflow','DTSTAMP:'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ'),'DTSTART:'+when,'SUMMARY:'+ics_escape(row['platform'].title()+' · '+row['title']),'DESCRIPTION:'+ics_escape(row['caption']),'END:VEVENT']
     lines+=['END:VCALENDAR']
     return Response(content='\r\n'.join(lines)+'\r\n',media_type='text/calendar',headers={'Content-Disposition':'attachment; filename="barberflow-plan.ics"'})
+
+from .bookings import install_booking_routes
+install_booking_routes(app, connect, get_user, throttle, uid, now)
 
 app.mount('/static',StaticFiles(directory=ROOT/'app'/'static'),name='static')
 @app.get('/')
