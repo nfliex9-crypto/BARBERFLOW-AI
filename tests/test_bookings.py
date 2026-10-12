@@ -110,3 +110,46 @@ def test_consent_timezone_and_account_export():
         removed=c.post("/api/account/delete",json={"password":"LongUniquePassword123!"})
         assert removed.status_code==200,removed.text
         assert c.get("/api/public/salons/"+salon).status_code==404
+
+
+def test_pilot_rejects_duplicate_requests_and_outside_hours():
+    with TestClient(app) as client:
+        salon=register(client, "Boundary Shop")["salon_id"]
+        svc=service(client, duration=60)
+        dt=appointment()
+        payload=request_payload(svc,dt)
+        first=client.post(f"/api/public/salons/{salon}/requests",json=payload)
+        assert first.status_code==201,first.text
+        second=client.post(f"/api/public/salons/{salon}/requests",json=payload)
+        assert second.status_code==409,second.text
+        late=request_payload(svc,dt.replace(hour=17,minute=30))
+        late["customer_email"]="late@example.org"
+        assert client.post(f"/api/public/salons/{salon}/requests",json=late).status_code==400
+        services=client.get("/api/bookings/services").json()["services"]
+        assert len(services)==1
+        deactivated=client.patch(f"/api/bookings/services/{svc}",json={"active":False})
+        assert deactivated.status_code==200
+        new_request=request_payload(svc,dt.replace(hour=12))
+        new_request["customer_email"]="different@example.org"
+        assert client.post(f"/api/public/salons/{salon}/requests",json=new_request).status_code==404
+
+
+def test_public_registration_is_disabled_by_default_in_production(monkeypatch):
+    import importlib
+    module=importlib.import_module("app.main")
+    monkeypatch.setattr(module,"ENV","production")
+    monkeypatch.delenv("BF_ALLOW_OPEN_SIGNUP",raising=False)
+    with TestClient(app) as client:
+        result=client.post("/api/auth/register",json={
+            "email":f"restricted-{uuid.uuid4()}@example.com",
+            "password":"LongUniquePassword123!",
+            "name":"Beta Owner", "salon_name":"Private Pilot"})
+        assert result.status_code==403,result.text
+        assert "private beta" in result.json()["detail"]
+    monkeypatch.setenv("BF_ALLOW_OPEN_SIGNUP","true")
+    with TestClient(app) as client:
+        result=client.post("/api/auth/register",json={
+            "email":f"allowed-{uuid.uuid4()}@example.com",
+            "password":"LongUniquePassword123!",
+            "name":"Beta Owner", "salon_name":"Private Pilot"})
+        assert result.status_code==200,result.text
