@@ -111,3 +111,10 @@ MIT. Brand/identity and example creative assets are placeholders; verify availab
 On the [business-pilot-v1](https://github.com/nfliex9-crypto/BARBERFLOW-AI/tree/business-pilot-v1) development branch, salon owners can also open **/static/bookings.html** after signing in, create services, and copy a link to the public **/static/book.html?salon=...** request form. Bookings remain pending until owner confirmation. Confirming a request does **not** send an email or SMS. Default pilot hours are Tuesday–Saturday 09:00–18:00 in Europe/Brussels.
 
 See [BUSINESS_PILOT.md](BUSINESS_PILOT.md) for pricing experiments, sales validation, safety gaps and setup. Existing FFmpeg studio remains available from **/**. This is a **development pilot**, not a production booking service or operational AI receptionist.
+
+
+## Business Engine v2 — development preview
+
+On branch [business-engine-v2](https://github.com/nfliex9-crypto/BARBERFLOW-AI/tree/business-engine-v2), the separate booking module adds editable weekly schedules, breaks, closed dates, and a public **English/French/Dutch** request page. Its opt-in TLS SMTP notification outbox requires a separately running worker and sender credentials. The main video editing Studio continues to render FFmpeg video files. Open **/static/bookings.html** from a logged-in salon account.
+
+Read [BUSINESS_ENGINE_V2.md](BUSINESS_ENGINE_V2.md) for actual API details, Windows setup, SMTP Docker profile and known pilot limitations. **Do not confuse an SMTP-queued status with proof of email delivery or customer confirmation.**
