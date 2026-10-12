@@ -123,3 +123,18 @@ def test_nizo_setup_fails_when_no_secret_configured(monkeypatch):
             "owner_name":"Other Owner"
         })
         assert resp.status_code==403
+
+
+def test_dedicated_public_root_and_owner_workspace(monkeypatch):
+    monkeypatch.setenv("BF_PUBLIC_SITE","nizo")
+    with TestClient(app) as client:
+        landing=client.get("/")
+        assert landing.status_code==200
+        assert "BARBER NIZO" in landing.text
+        assert "/static/nizo.js" in landing.text
+        studio=client.get("/app")
+        assert studio.status_code==200
+        assert "BarberFlow Studio" in studio.text
+    monkeypatch.delenv("BF_PUBLIC_SITE",raising=False)
+    with TestClient(app) as client:
+        assert "/static/app.js" in client.get("/").text
