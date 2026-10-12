@@ -7,7 +7,7 @@ Development branch: `business-engine-v2`. Base branch: `business-pilot-v1`. Neit
 - Optional lunch break on each weekday, date closures/holidays, public availability filtered on the server.
 - Revalidation on booking submission **and** confirmation; transactional SQLite conflicts for confirmed appointments.
 - State transitions: pending to confirmed/declined/cancelled; confirmed to cancelled only. No automatic rescheduling of existing confirmed customers after a calendar edit.
-- Per-salon admin controls, public request form, HTTPS-ready application with account isolation.
+- Per-salon admin controls, public request form localized in English/French/Dutch, HTTPS-ready application with account isolation.
 - SMTP email outbox for owner request notifications and customer confirmation/decline/cancellation. SMTP delivery is OPT-IN. Messages remain in SQLite if worker is not running; worker retries failures up to 5 times.
 - Worker heartbeat and queue status displayed to salon owner; 'smtp_accepted' means accepted by SMTP, NOT delivered into recipient inbox.
 - Newly added backend integration tests of schedule/closures, account data privacy, delayed mail and invalid transitions; real FFmpeg tests remain part of CI.
@@ -88,3 +88,5 @@ CI tests include actual FFmpeg output, so the Ubuntu runner must have FFmpeg ins
 
 ## Upstream GitHub/n8n policy
 Refer to `GITHUB_N8N_AUDIT_2026.md` on the base branch. n8n templates are integration references only; no workflow was represented as production-connected. The client-facing app remains our own service and no proprietary/strong-copyleft code was imported wholesale.
+### Optional Compose profile detail
+The SMTP worker lives behind Docker Compose's `email` profile. Missing SMTP settings do not block the normal API-only Compose deployment; activating the profile without correct credentials causes the worker to report a startup error. Verify worker health inside the owner dashboard.
