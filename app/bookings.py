@@ -1,18 +1,11 @@
 """BarberFlow bookings pilot: manual confirmation, Brussels time and salon isolation."""
-from datetime import date, datetime, time, timedelta, timezone
-from zoneinfo import ZoneInfo
+from datetime import date, datetime, timedelta, timezone
 import re
 from .scheduling import init_schedule, hours_for, ensure_hours, valid_slot, slots_for, validate_hours, ZONE
 from .notifications import init_outbox, enqueue, config_ready, worker_alive
 
 from fastapi import Depends, HTTPException, Request
 from pydantic import BaseModel, Field
-
-ZONE = ZoneInfo("Europe/Brussels")
-OPEN = time(9, 0)
-CLOSE = time(18, 0)
-OPEN_WEEKDAYS = {1, 2, 3, 4, 5}  # Tuesday to Saturday — configurable in a later iteration
-
 
 class ServiceNew(BaseModel):
     name: str = Field(min_length=2, max_length=65)
@@ -48,27 +41,6 @@ class BookingRequest(BaseModel):
 
 class BookingState(BaseModel):
     state: str = Field(pattern="^(confirmed|declined|cancelled)$")
-
-
-def stamp(dt: datetime) -> str:
-    return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-def slot_start(raw: datetime, duration: int):
-    if raw.tzinfo is None or raw.utcoffset() is None:
-        raise HTTPException(400, "Appointment time must include an explicit timezone offset")
-    local = raw.astimezone(ZONE)
-    if local.weekday() not in OPEN_WEEKDAYS:
-        raise HTTPException(400, "Salon is closed on that day")
-    if local.second or local.microsecond or local.minute % 30:
-        raise HTTPException(400, "Start at a full or half hour")
-    if local.time().replace(tzinfo=None) < OPEN or (local + timedelta(minutes=duration)).time().replace(tzinfo=None) > CLOSE:
-        raise HTTPException(400, "Outside pilot opening hours (09:00–18:00)")
-    utc = raw.astimezone(timezone.utc)
-    current = datetime.now(timezone.utc)
-    if utc < current + timedelta(hours=2) or utc > current + timedelta(days=60):
-        raise HTTPException(400, "Choose a time between 2 hours and 60 days ahead")
-    return stamp(utc), stamp(utc + timedelta(minutes=duration))
 
 
 def conflict(con, salon_id, start, end):
