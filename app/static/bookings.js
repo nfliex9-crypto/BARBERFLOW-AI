@@ -30,7 +30,7 @@
     const data=await api('/api/bookings/mail-status');
     const states=data.states.map(row=>row.state+': '+row.count).join(' · ');
     $('mail-status').textContent=data.email_queue_enabled
-      ? 'SMTP queue enabled; worker operation must be monitored. '+(states||'No messages queued yet.')
+      ? (data.worker_running?'Email worker active. ':'Email queue configured but worker is OFFLINE. ') +(states||'No messages queued yet.')
       : 'Email queue disabled. You must contact customers manually.';
   }
   async function hours(){
