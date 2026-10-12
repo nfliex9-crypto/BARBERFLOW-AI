@@ -143,6 +143,8 @@ def login_cookie(response,uid):
 
 @app.post('/api/auth/register')
 def register(body:Registration,response:Response,request:Request):
+    if ENV == 'production' and os.getenv('BF_ALLOW_OPEN_SIGNUP','false').strip().lower() not in ('true','1','yes'):
+        raise HTTPException(403,'New account registration is closed during the private beta')
     throttle(request,'register',8,3600)
     email=body.email.strip().lower()
     if not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+',email) or len(email)>200: raise HTTPException(400,'Enter a valid email')
