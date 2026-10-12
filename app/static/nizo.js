@@ -196,7 +196,13 @@
     }));
     localeApply();
     try{site=await json('/api/nizo/site');renderSite();}
-    catch(error){setNotice(tr('genericError'),true);return;}
+    catch(error){
+      // Standalone hosting previews contain no API; keep the phone fallback usable.
+      site={configured:false,published:false,booking_enabled:false,services:[],hours:[]};
+      renderSite();
+      setNotice(tr('disabled'));
+      return;
+    }
     const date=$('nizo-date'),now=new Date();
     date.min=fmtDay(now);date.max=fmtDay(new Date(now.getTime()+60*86400000));date.value=date.min;
     $('nizo-service').addEventListener('change',refreshSlots);
