@@ -43,6 +43,13 @@ def test_nizo_preview_owner_onboarding_and_real_booking(monkeypatch):
         assert not not_yet["booking_enabled"]
         assert not_yet["salon_id"] is None
         assert len(not_yet["services"])==3
+        first_service=not_yet["services"][0]
+        changed=client.put("/api/bookings/services/"+first_service["id"],json={
+            "name":"Herenknipbeurt — eigenaar bevestigd",
+            "duration_minutes":45,"price_cents":2800
+        })
+        assert changed.status_code==200,changed.text
+        assert visitor.get("/api/nizo/site").json()["services"][0]["price_cents"]==2800
         hidden_salon=client.get("/api/auth/me").json()["user"]["salon_id"]
         hidden_service=not_yet["services"][0]["id"]
         assert visitor.get(f"/api/public/salons/{hidden_salon}/slots",params={
@@ -87,6 +94,10 @@ def test_nizo_preview_owner_onboarding_and_real_booking(monkeypatch):
         assert booked.json()["state"]=="pending"
         assert client.get("/api/bookings/metrics").json()["requests_total"]==1
         assert client.patch("/api/bookings/"+booked.json()["id"],json={"state":"confirmed"}).status_code==200
+        cannot_rewrite=client.put("/api/bookings/services/"+first_service["id"],json={
+            "name":"Changed after booking","duration_minutes":30,"price_cents":2000
+        })
+        assert cannot_rewrite.status_code==409,cannot_rewrite.text
         hidden=client.post("/api/nizo/publish",json={
             "business_permission":False,"services_checked":False,
             "opening_hours_checked":False,"privacy_notice_checked":False,"enable":False
