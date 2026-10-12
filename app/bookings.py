@@ -251,6 +251,32 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
                 "message": "Request received; your appointment is NOT confirmed yet. The salon must contact you."}
 
 
+
+    @app.get("/api/bookings/metrics")
+    def booking_metrics(user=Depends(get_user)):
+        current = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        with connect() as con:
+            counts = con.execute("""SELECT state,COUNT(*) AS n FROM bf_bookings
+                WHERE salon_id=? GROUP BY state""", (user["salon_id"],)).fetchall()
+            upcoming = con.execute("""SELECT COUNT(*) FROM bf_bookings
+                WHERE salon_id=? AND state='confirmed' AND starts_at>=?""",
+                (user["salon_id"],current)).fetchone()[0]
+            customers = con.execute("""SELECT COUNT(DISTINCT customer_email) FROM bf_bookings
+                WHERE salon_id=?""", (user["salon_id"],)).fetchone()[0]
+            value = con.execute("""SELECT COALESCE(SUM(s.price_cents),0)
+                FROM bf_bookings b JOIN bf_services s ON s.id=b.service_id
+                WHERE b.salon_id=? AND b.state='confirmed'""",
+                (user["salon_id"],)).fetchone()[0]
+        distribution={row["state"]:row["n"] for row in counts}
+        return {"requests_total": sum(distribution.values()),
+                "pending": distribution.get("pending",0),
+                "confirmed": distribution.get("confirmed",0),
+                "declined": distribution.get("declined",0),
+                "cancelled": distribution.get("cancelled",0),
+                "upcoming_confirmed": upcoming, "unique_contact_emails": customers,
+                "confirmed_service_list_price_cents": value,
+                "warning": "Listed value of confirmed bookings; not collected revenue or guaranteed attendance"}
+
     @app.get("/api/bookings/mail-status")
     def admin_mail_status(user=Depends(get_user)):
         with connect() as con:
