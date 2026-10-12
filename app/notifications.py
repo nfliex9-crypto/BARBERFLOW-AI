@@ -37,6 +37,10 @@ CREATE TABLE IF NOT EXISTS bf_mail_outbox (
     UNIQUE(booking_id,kind)
 );
 CREATE INDEX IF NOT EXISTS bf_outbox_jobs ON bf_mail_outbox(state,next_attempt_at,claimed_at);
+CREATE TABLE IF NOT EXISTS bf_mail_worker (
+    singleton INTEGER PRIMARY KEY CHECK(singleton=1),
+    last_heartbeat TEXT NOT NULL
+);
 """)
 
 
@@ -59,6 +63,23 @@ def enqueue(con, salon_id, booking_id, kind, recipient, subject, message):
         (str(uuid.uuid4()),salon_id,booking_id,kind,recipient,subject,message,
          "pending",0,now,now))
     return inserted.rowcount == 1
+
+
+
+def update_heartbeat(con):
+    con.execute("""INSERT INTO bf_mail_worker(singleton,last_heartbeat) VALUES(1,?)
+        ON CONFLICT(singleton) DO UPDATE SET last_heartbeat=excluded.last_heartbeat""", (now_utc(),))
+
+
+def worker_alive(con):
+    heartbeat=con.execute("SELECT last_heartbeat FROM bf_mail_worker WHERE singleton=1").fetchone()
+    if heartbeat is None:
+        return False
+    try:
+        checked=datetime.strptime(heartbeat["last_heartbeat"],"%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+        return (datetime.now(timezone.utc)-checked).total_seconds() < 75
+    except (ValueError,TypeError):
+        return False
 
 
 def claim(con):
@@ -113,6 +134,7 @@ def run_once(connect, send=deliver):
     if not config_ready():
         return {"status":"disabled"}
     with connect() as con:
+        update_heartbeat(con)
         job = claim(con)
     if not job:
         return {"status":"idle"}
