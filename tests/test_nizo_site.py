@@ -21,6 +21,12 @@ def test_nizo_preview_owner_onboarding_and_real_booking(monkeypatch):
         assert before.status_code==200,before.text
         assert not before.json()["configured"]
         assert not before.json()["booking_enabled"]
+        public_hours=before.json()["hours"]
+        assert len(public_hours)==7
+        assert public_hours[0]=={"weekday":0,"enabled":0,"opens":"10:00","closes":"19:00"}
+        assert all(day["enabled"]==1 and day["opens"]=="10:00" and day["closes"]=="19:00"
+                   for day in public_hours[1:6])
+        assert public_hours[6]=={"weekday":6,"enabled":1,"opens":"10:00","closes":"17:00"}
         assert before.json()["salon_id"] is None
         assert visitor.post("/api/nizo/publish",json={
             "business_permission":True,"services_checked":True,
@@ -138,3 +144,18 @@ def test_dedicated_public_root_and_owner_workspace(monkeypatch):
     monkeypatch.delenv("BF_PUBLIC_SITE",raising=False)
     with TestClient(app) as client:
         assert "/static/app.js" in client.get("/").text
+
+
+def test_nizo_social_links_and_opening_hours_in_rendered_preview():
+    with TestClient(app) as client:
+        response=client.get("/nizo")
+        assert response.status_code==200
+        assert "TIKTOK ↗" in response.text
+        assert "INSTAGRAM ↗" in response.text
+        assert "Dinsdag</span><span>10:00 – 19:00" in response.text
+        assert "Zondag</span><span>10:00 – 17:00" in response.text
+        assert "Maandag</span><span>Gesloten" in response.text
+        js=client.get("/static/nizo.js")
+        assert js.status_code==200
+        assert "const NIZO_HOURS" in js.text
+        assert "renderHours()" in js.text
