@@ -2,7 +2,7 @@
   'use strict';
   const $ = id => document.getElementById(id);
   const sid = new URLSearchParams(location.search).get('salon') || '';
-  const state = {selected: null, slots: []};
+  const state = {selected: null, slots: [], generation: 0};
   const notice = (message, error=false) => {const n=$('notice'); n.hidden=false; n.className=error?'notice error':'notice';n.textContent=message;};
   async function api(path, options) {
     const response = await fetch(path, {credentials:'same-origin',...options});
@@ -16,15 +16,16 @@
     $('submit').disabled=!value;
   }
   async function slots() {
-    state.selected=null;$('submit').disabled=true;$('times').replaceChildren();
+    const generation=++state.generation;state.selected=null;$('submit').disabled=true;$('times').replaceChildren();
     const service=$('service').value, day=$('date').value;
     if (!service||!day) return;
     try {
       const data=await api('/api/public/salons/'+encodeURIComponent(sid)+'/slots?service_id='+encodeURIComponent(service)+'&day='+encodeURIComponent(day));
+      if(generation!==state.generation)return;
       state.slots=data.slots;
       if (!state.slots.length) {$('times').textContent='No slots available for this date.';return;}
       state.slots.forEach(slot=>{const b=document.createElement('button');b.type='button';b.className='time-button';b.dataset.start=slot.starts_at;b.textContent=slot.label;b.setAttribute('aria-pressed','false');b.addEventListener('click',()=>selectTime(slot.starts_at));$('times').append(b);});
-    }catch(e){notice(e.message,true);}
+    }catch(e){if(generation===state.generation)notice(e.message,true);}
   }
   async function load() {
     if(!/^[\w-]{3,64}$/.test(sid)){notice('Invalid booking link.',true);return;}
