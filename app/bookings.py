@@ -3,7 +3,7 @@ from datetime import date, datetime, time, timedelta, timezone
 from zoneinfo import ZoneInfo
 import re
 from .scheduling import init_schedule, hours_for, ensure_hours, valid_slot, slots_for, validate_hours, ZONE
-from .notifications import init_outbox, enqueue, config_ready
+from .notifications import init_outbox, enqueue, config_ready, worker_alive
 
 from fastapi import Depends, HTTPException, Request
 from pydantic import BaseModel, Field
@@ -256,7 +256,9 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
         with connect() as con:
             rows = con.execute("""SELECT state,COUNT(*) AS count FROM bf_mail_outbox
                 WHERE salon_id=? GROUP BY state""", (user["salon_id"],)).fetchall()
-        return {"email_queue_enabled": config_ready(), "states": [dict(r) for r in rows],
+            worker_running = worker_alive(con)
+        return {"email_queue_enabled": config_ready(), "worker_running": worker_running,
+                "states": [dict(r) for r in rows],
                 "note": "smtp_accepted means accepted by the SMTP provider, not delivered to the inbox"}
 
     @app.get("/api/bookings")
