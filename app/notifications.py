@@ -135,6 +135,7 @@ def run_once(connect, send=deliver):
         return {"status":"disabled"}
     with connect() as con:
         update_heartbeat(con)
+        con.commit()
         job = claim(con)
     if not job:
         return {"status":"idle"}
