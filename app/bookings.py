@@ -280,8 +280,10 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
                             (booking_id, user["salon_id"])).fetchone()
             if not b:
                 raise HTTPException(404, "Booking not found")
-            if b["state"] in ("declined","cancelled"):
-                raise HTTPException(409, "Closed bookings cannot be re-opened")
+            permitted = {"pending": {"confirmed","declined","cancelled"},
+                         "confirmed": {"cancelled"}}
+            if body.state not in permitted.get(b["state"], set()):
+                raise HTTPException(409, "Invalid booking state transition")
             if body.state == "confirmed":
                 if b["state"] != "pending":
                     raise HTTPException(409, "Only pending requests may be confirmed")
@@ -296,6 +298,10 @@ CREATE INDEX IF NOT EXISTS bf_booking_slots ON bf_bookings(salon_id, state, star
                     raise HTTPException(409, "Conflicting confirmed appointment")
             result = con.execute("""UPDATE bf_bookings SET state=?, updated_at=? WHERE id=? AND salon_id=? RETURNING id,state""",
                                  (body.state, now(), booking_id, user["salon_id"])).fetchone()
+            if body.state == "cancelled":
+                con.execute("""UPDATE bf_mail_outbox SET state='superseded'
+                    WHERE booking_id=? AND salon_id=? AND kind='confirmed' AND state='pending'""",
+                    (booking_id,user["salon_id"]))
             starts_local = datetime.fromisoformat(b["starts_at"].replace("Z","+00:00")).astimezone(ZONE).strftime("%d/%m/%Y %H:%M")
             if body.state == "confirmed":
                 subject = "Appointment confirmed — " + user["salon"]
