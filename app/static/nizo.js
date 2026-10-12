@@ -93,6 +93,11 @@
   let site=null;
   let selectedTime=null;
   let generation=0;
+  // Confirmed by the project contact, unlike third-party opening-hours directories.
+  const NIZO_HOURS = Array.from({length:7},(_,weekday)=>({
+    weekday, enabled: weekday===0?0:1,
+    opens:'10:00',closes:weekday===6?'17:00':'19:00'
+  }));
   function tr(key){return localeText[lang][key]||key;}
   function setNotice(message,err=false){
     const node=$('booking-state');node.textContent=message;node.className='notice'+(err?' error':'');
@@ -118,7 +123,21 @@
     const part=type=>pieces.find(x=>x.type===type).value;
     return part('year')+'-'+part('month')+'-'+part('day');
   }
+  function renderHours(){
+    const holder=$('hours-list');
+    const schedule=(site && Array.isArray(site.hours) && site.hours.length===7)
+      ? site.hours : NIZO_HOURS;
+    holder.replaceChildren();
+    [...schedule].sort((a,b)=>a.weekday-b.weekday).forEach(h=>{
+      const row=document.createElement('div');row.className='hours-row';
+      const day=document.createElement('span');day.textContent=tr('dayNames')[h.weekday];
+      const time=document.createElement('span');
+      time.textContent=h.enabled?h.opens+' – '+h.closes:tr('closed');
+      row.append(day,time);holder.append(row);
+    });
+  }
   function renderSite(){
+    renderHours();
     const cards=$('service-cards');
     if(site.configured && site.services.length){
       cards.replaceChildren();
@@ -139,8 +158,7 @@
       $('nizo-booking-form').hidden=true;
       $('phone-fallback').hidden=false;
       setNotice(tr('disabled'));
-      $('hours-list').replaceChildren();
-      const p=document.createElement('p');p.textContent=tr('hoursCheck');$('hours-list').append(p);
+
       return;
     }
     $('nizo-booking-form').hidden=false;
@@ -153,13 +171,7 @@
       input.add(new Option(service.name+' · '+service.duration_minutes+' min · '+cost,service.id));
     });
     if([...input.options].some(option=>option.value===previous))input.value=previous;
-    const hours=$('hours-list');hours.replaceChildren();
-    site.hours.sort((a,b)=>a.weekday-b.weekday).forEach(h=>{
-      const row=document.createElement('div');row.className='hours-row';
-      const day=document.createElement('span');day.textContent=tr('dayNames')[h.weekday];
-      const time=document.createElement('span');time.textContent=h.enabled?h.opens+' – '+h.closes:tr('closed');
-      row.append(day,time);hours.append(row);
-    });
+
   }
   async function refreshSlots(){
     const current=++generation;selectedTime=null;$('nizo-submit').disabled=true;
@@ -198,7 +210,7 @@
     try{site=await json('/api/nizo/site');renderSite();}
     catch(error){
       // Standalone hosting previews contain no API; keep the phone fallback usable.
-      site={configured:false,published:false,booking_enabled:false,services:[],hours:[]};
+      site={configured:false,published:false,booking_enabled:false,services:[],hours:NIZO_HOURS};
       renderSite();
       setNotice(tr('disabled'));
       return;
