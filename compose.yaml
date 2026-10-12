@@ -10,8 +10,34 @@ services:
       BF_OUTPUT_WIDTH: "1080"
       BF_OUTPUT_HEIGHT: "1920"
       BF_WORKERS: "2"
+      BF_SMTP_ENABLED: ${BF_SMTP_ENABLED:-false}
+      BF_SMTP_HOST: ${BF_SMTP_HOST:-}
+      BF_SMTP_FROM: ${BF_SMTP_FROM:-}
     volumes:
       - ./media:/data
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+  mail-worker:
+    profiles: ["email"]
+    build: .
+    command: ["python", "-m", "app.notifications"]
+    restart: unless-stopped
+    depends_on:
+      - barberflow
+    environment:
+      APP_ENV: production
+      SECRET_KEY: ${APP_SECRET:?Generate APP_SECRET first}
+      BF_DATA_DIR: /data
+      BF_SMTP_ENABLED: "true"
+      BF_SMTP_HOST: ${BF_SMTP_HOST:-}
+      BF_SMTP_PORT: ${BF_SMTP_PORT:-587}
+      BF_SMTP_SECURITY: ${BF_SMTP_SECURITY:-starttls}
+      BF_SMTP_FROM: ${BF_SMTP_FROM:-}
+      BF_SMTP_USER: ${BF_SMTP_USER:-}
+      BF_SMTP_PASSWORD: ${BF_SMTP_PASSWORD:-}
+    volumes:
+      - ./media:/data
     security_opt:
       - no-new-privileges:true

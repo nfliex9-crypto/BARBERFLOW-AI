@@ -29,5 +29,10 @@ jobs:
           node --check app/static/app.js
           node --check app/static/book.js
           node --check app/static/bookings.js
+      - name: Validate API-only Docker Compose without SMTP credentials
+        env:
+          APP_SECRET: "ci-only-not-an-actual-production-secret-which-is-long-enough"
+          BF_SMTP_ENABLED: "false"
+        run: docker compose config --quiet
       - name: Real MP4 integration suite
         run: pytest -q
