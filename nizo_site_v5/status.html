@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#09070d"><meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer"><title>BARBER NIZO · Afspraakstatus</title>
+<link rel="icon" href="assets/nizo-logo.svg"><link rel="stylesheet" href="styles.css">
+<style>
+.status-shell{min-height:100vh;max-width:900px;margin:0 auto;padding:35px 20px 90px}
+.status-header{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 0 32px;border-bottom:1px solid #7e518f}
+.status-header img{width:170px;max-width:45vw}.status-back{display:inline-flex;gap:10px;align-items:center;color:var(--lime);font-size:12px;font-weight:800}
+.status-title{font:900 clamp(48px,8vw,93px)/1 var(--heading);margin:72px 0 12px}
+.status-title em{font-style:normal;color:var(--violet)}
+.status-lead{color:#bbb0c5;line-height:1.9;font-size:14px}
+.status-panel{border:1px solid #704b7e;background:radial-gradient(circle at 90% 10%,#52226277,transparent 50%),#18111e;border-radius:19px;padding:clamp(22px,5vw,46px);margin:32px 0}
+.status-state{font:900 28px/1.2 var(--heading);color:var(--lime);letter-spacing:.04em}
+.status-data{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin:30px 0}
+.status-data div{padding:16px;background:#120c17;border:1px solid #51335b;border-radius:10px}
+.status-data small{display:block;font-size:10px;color:#bfacc6;margin-bottom:10px}
+.status-data strong{font-size:15px}
+.status-actions{display:flex;gap:12px;flex-wrap:wrap}
+.status-notice{font-size:13px;color:#d2c7dc;line-height:1.8}
+.status-danger{color:#ffcdd4}.status-success{color:var(--lime)}
+@media(max-width:620px){.status-data{grid-template-columns:1fr}.status-title{margin-top:55px}}
+</style><script defer src="status.js"></script></head>
+<body><main class="status-shell">
+<header class="status-header"><a href="index.html" aria-label="BARBER NIZO, home"><img src="assets/nizo-logo.svg" alt="BARBER NIZO"></a><a class="status-back" href="index.html"><svg class="nizo-icon" aria-hidden="true"><use href="assets/nizo-icons.svg#arrow-left"></use></svg> TERUG</a></header>
+<p class="eyebrow">BOOKING / STATUS</p>
+<h1 class="status-title">YOUR BOOKING.<br><em>YOUR STATUS.</em></h1>
+<p class="status-lead">Bekijk hier of je aanvraag door BARBER NIZO is bevestigd. De gegevens in deze link zijn privé: deel de link niet openbaar.</p>
+<section class="status-panel" aria-label="Afspraakstatus">
+<p id="status-message" role="status" aria-live="polite">We controleren je aanvraag…</p>
+<p class="status-state" id="current-status" aria-live="polite">CONTROLEREN</p>
+<div class="status-data"><div><small>DATUM</small><strong id="status-date">—</strong></div><div><small>TIJD</small><strong id="status-time">—</strong></div><div><small>BEHANDELING</small><strong id="status-service">—</strong></div></div>
+<div class="status-actions"><button id="status-refresh" class="btn btn-lime" type="button"><svg class="nizo-icon" aria-hidden="true"><use href="assets/nizo-icons.svg#refresh"></use></svg> VERNIEUW STATUS</button>
+<button id="status-copy" type="button" class="btn btn-outline">KOPIEER PRIVÉLINK <svg class="nizo-icon" aria-hidden="true"><use href="assets/nizo-icons.svg#arrow-up-right"></use></svg></button></div>
+<p class="status-notice">Een reserveringsaanvraag is niet automatisch bevestigd. Bel 0471 82 16 30 als je snel een antwoord nodig hebt.</p>
+</section></main></body></html>
