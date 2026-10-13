@@ -39,7 +39,7 @@
      if(tag){
        tag.replaceChildren();
        tag.append(document.createTextNode(euro(s.price_cents)+' '));
-       if(!s.price_confirmed)tag.append(document.createElement('small')).textContent='*';
+       if(!s.price_confirmed){const mark=document.createElement('small');mark.textContent='*';tag.append(mark);}
      }
    });
    const allOfficial=state.live&&state.services.length>0&&state.services.every(s=>s.price_confirmed);
