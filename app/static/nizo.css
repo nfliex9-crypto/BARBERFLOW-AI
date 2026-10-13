@@ -175,3 +175,64 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 }
 @media(max-width:370px){.service-photos{grid-template-columns:1fr}.service-card{min-height:280px}.hero h1{font-size:50px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation:none!important}}
+
+
+/* BARBER NIZO v4 — lightweight motion and interactive pricing; no runtime UI library. */
+#reading-progress{position:fixed;left:0;top:0;width:100%;height:3px;transform:scaleX(0);transform-origin:left;z-index:400;pointer-events:none;background:linear-gradient(90deg,var(--violet),var(--lime));box-shadow:0 0 13px var(--violet)}
+.site-header{position:sticky;top:0;transition:background .25s,box-shadow .25s}
+.site-header.is-scrolled{background:#070609ee;box-shadow:0 14px 38px #0009}
+.neon-on-wall{translate:0 var(--scroll-offset,0px);will-change:translate}
+.service-photos{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.service-card{min-height:333px}
+.service-card h3{font-size:clamp(19px,1.7vw,26px)}
+.service-price{display:flex;align-items:center;gap:9px;margin:12px 0 8px;flex-wrap:wrap}
+.service-price strong{color:var(--lime);font-size:30px;font-weight:850;line-height:1;letter-spacing:-.04em;text-shadow:0 0 14px #dcff2930}
+.service-price small{font-size:8px;font-weight:900;letter-spacing:.12em;color:#d9cbf1;border:1px solid #ae71e27d;padding:5px 7px;border-radius:20px;white-space:nowrap}
+.service-price small:empty{display:none}
+.service-meta{font-size:10px;color:#e5e1ea}
+.price-planner{margin-top:34px;padding:28px 31px;border-radius:16px;border:1px solid #c34ff54f;display:grid;grid-template-columns:minmax(200px,1.4fr) minmax(175px,.9fr) minmax(110px,.55fr) auto;gap:24px;align-items:center;background:radial-gradient(circle at 76% 20%,#49185a71,transparent 46%),linear-gradient(135deg,#1e1824,#120f17);box-shadow:0 22px 50px #0003}
+.price-planner h3{font:900 clamp(26px,3vw,38px)/1.07 var(--head);margin:8px 0;letter-spacing:.03em}
+.lime-dot{color:var(--lime)}
+.price-planner .fine-note{margin:0;max-width:370px}
+.planner-select{display:grid;gap:9px;font-size:10px;letter-spacing:.1em;font-weight:850;color:#c3bec8}
+.planner-select select{background:#0c0a0f;color:#f5f2f9;border:1px solid #9363ad;border-radius:9px;min-height:47px;padding:10px;max-width:100%}
+.planner-total{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.planner-total #pricing-amount{font:900 clamp(33px,4vw,55px)/1 var(--head);color:var(--lime);text-shadow:0 0 20px #e0ff293e;white-space:nowrap}
+.planner-total small{font-size:10px;color:#b9b5c3;letter-spacing:.18em;font-weight:800}
+.gallery-grid{display:flex;gap:18px;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:#733896 #141019;padding:2px 1px 16px}
+.gallery-shot{height:310px;flex:0 0 clamp(275px,32vw,450px);scroll-snap-align:start}
+.gallery-four{background-image:url("https://images.unsplash.com/photo-1747830280502-f33d7305a714?auto=format&fit=crop&w=750&q=76")}
+.gallery-five{background-image:url("https://images.unsplash.com/photo-1702865272115-5afdbae975af?auto=format&fit=crop&w=750&q=76")}
+.gallery-action{display:flex;align-items:flex-end;gap:18px;flex-direction:column;max-width:320px}
+.gallery-action>p{font-size:13px;line-height:1.8;color:var(--muted);margin:0}
+.gallery-controls{display:flex;gap:10px}
+.gallery-controls button{width:42px;height:42px;border-radius:50%;border:1px solid #9e80b2;background:#211629;color:#fff;font-size:20px;transition:background .2s,transform .2s}
+.gallery-controls button:hover{background:#773b96;transform:translateY(-2px)}
+.gallery-controls button:disabled{opacity:.45;cursor:default}
+.motion-reveal{opacity:0;transform:translateY(26px);transition:opacity .65s ease,transform .65s cubic-bezier(.17,.67,.35,1)}
+.motion-reveal.motion-in{opacity:1;transform:translateY(0)}
+.mobile-booking-cta{display:none}
+@media(max-width:1250px){
+  .service-photos{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .service-card{min-height:290px}
+  .price-planner{grid-template-columns:1fr 1fr;gap:21px}
+}
+@media(max-width:700px){
+  .price-planner{width:calc(100% - 36px);padding:23px 19px;grid-template-columns:1fr 1fr;gap:17px}
+  .price-planner>div:first-child{grid-column:1/-1}
+  .price-planner>.pill-button{grid-column:1/-1}
+  .service-photos{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .service-card{min-height:270px}
+  .service-price strong{font-size:26px}
+  .service-price small{font-size:7px}
+  .gallery-heading{display:block}
+  .gallery-action{max-width:none;align-items:flex-start;margin-top:14px}
+  .gallery-grid{gap:11px}
+  .gallery-shot{flex-basis:75vw;height:260px}
+  .mobile-booking-cta{display:flex;position:fixed;z-index:200;right:14px;bottom:max(15px,env(safe-area-inset-bottom));align-items:center;justify-content:center;background:var(--lime);color:#131307;border-radius:999px;padding:13px 21px;box-shadow:0 8px 25px #000c,0 0 20px #dfff2955;font-size:11px;font-weight:900;letter-spacing:.04em}
+  .site-footer{padding-bottom:74px}
+}
+@media(prefers-reduced-motion:reduce){
+  .motion-reveal{opacity:1!important;transform:none!important;transition:none!important}
+  .neon-on-wall{translate:none!important}
+}
