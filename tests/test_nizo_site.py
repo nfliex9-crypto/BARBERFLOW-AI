@@ -23,10 +23,10 @@ def test_nizo_preview_owner_onboarding_and_real_booking(monkeypatch):
         assert not before.json()["booking_enabled"]
         public_hours=before.json()["hours"]
         assert len(public_hours)==7
-        assert public_hours[0]=={"weekday":0,"enabled":0,"opens":"10:00","closes":"19:00"}
-        assert all(day["enabled"]==1 and day["opens"]=="10:00" and day["closes"]=="19:00"
+        assert public_hours[0]=={"weekday":0,"enabled":1,"opens":"10:00","closes":"20:00"}
+        assert all(day["enabled"]==1 and day["opens"]=="10:00" and day["closes"]=="20:00"
                    for day in public_hours[1:6])
-        assert public_hours[6]=={"weekday":6,"enabled":1,"opens":"10:00","closes":"17:00"}
+        assert public_hours[6]=={"weekday":6,"enabled":0,"opens":"10:00","closes":"20:00"}
         assert before.json()["salon_id"] is None
         assert visitor.post("/api/nizo/publish",json={
             "business_permission":True,"services_checked":True,
@@ -64,9 +64,9 @@ def test_nizo_preview_owner_onboarding_and_real_booking(monkeypatch):
         assert all(s["price_cents"]==0 for s in not_yet["services"])
         assert client.get("/api/nizo/admin").status_code==200
         hours=client.get("/api/bookings/hours").json()["hours"]
-        assert hours[0]["enabled"]==0
-        assert hours[1]["opens"]=="10:00" and hours[1]["closes"]=="19:00"
-        assert hours[6]["enabled"]==1 and hours[6]["closes"]=="17:00"
+        assert hours[0]["enabled"]==1
+        assert hours[1]["opens"]=="10:00" and hours[1]["closes"]=="20:00"
+        assert hours[6]["enabled"]==0 and hours[6]["closes"]=="20:00"
         failed=client.post("/api/nizo/publish",json={
             "business_permission":True,"services_checked":False,
             "opening_hours_checked":True,"privacy_notice_checked":True,"enable":True
@@ -152,9 +152,9 @@ def test_nizo_social_links_and_opening_hours_in_rendered_preview():
         assert response.status_code==200
         assert 'aria-label="TikTok BARBER NIZO"' in response.text
         assert 'aria-label="Instagram BARBER NIZO"' in response.text
-        assert "Dinsdag</span><span>10:00 – 19:00" in response.text
-        assert "Zondag</span><span>10:00 – 17:00" in response.text
-        assert "Maandag</span><span>Gesloten" in response.text
+        assert "Dinsdag</span><span>10:00 – 20:00" in response.text
+        assert "Zondag</span><span>Gesloten" in response.text
+        assert "Maandag</span><span>10:00 – 20:00" in response.text
         js=client.get("/static/nizo.js")
         assert js.status_code==200
         assert "const NIZO_HOURS" in js.text
@@ -173,9 +173,9 @@ def test_approved_neon_website_brand_and_verified_contact_details():
         assert "nizo-neon-logo.svg" in html
         assert "Phoenixstraat 81" in html
         assert "0471 82 16 30" in html
-        assert "Maandag</span><span>Gesloten" in html
-        assert "Dinsdag</span><span>10:00 – 19:00" in html
-        assert "Zondag</span><span>10:00 – 17:00" in html
+        assert "Maandag</span><span>10:00 – 20:00" in html
+        assert "Dinsdag</span><span>10:00 – 20:00" in html
+        assert "Zondag</span><span>Gesloten" in html
         assert "VOORSTELPRIJZEN" in html
         assert "Geen officiële prijslijst" in html
         for required in ("service-cards", "nizo-booking-form", "nizo-service", "nizo-date",
@@ -221,3 +221,12 @@ def test_preview_prices_are_explicitly_unconfirmed_and_interactive():
         assert "price-planner" in css.text
         assert "scroll-snap-type" in css.text
         assert "reading-progress" in css.text
+
+
+def test_scissor_asset_is_served():
+    with TestClient(app) as c:
+        assert '/static/nizo-scissor.js' in c.get('/nizo').text
+        js=c.get('/static/nizo-scissor.js')
+        assert js.status_code==200
+        assert 'nizo-cut-stage' in js.text
+        assert 'prefers-reduced-motion' in js.text
