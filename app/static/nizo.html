@@ -13,6 +13,7 @@
 </head>
 <body>
 <div id="preview-notice" class="preview-banner" role="status"><span class="preview-pulse"></span> DESIGN PREVIEW · Boekingen pas na activering door de eigenaar</div>
+<div id="reading-progress" aria-hidden="true"></div>
 <header class="site-header" id="top">
   <div class="header-inner">
     <a class="brand-mark" href="#top" aria-label="BARBER NIZO, naar boven">
@@ -65,12 +66,19 @@
       <a class="text-arrow" href="#booking"><span data-tr="navBook">AFSPRAAK</span> ↗</a>
     </div>
     <div id="service-cards" class="service-photos">
-      <a class="service-card" href="#booking"><span class="service-nr">01 / CUT</span><div class="service-details"><h3>HERENKNIPBEURT</h3><p data-tr="serviceDesc1">Een frisse coupe, perfect afgewerkt.</p><span class="service-meta" data-tr="priceUponRequest">PRIJS OP AANVRAAG</span></div><span class="service-arrow" aria-hidden="true">↗</span></a>
-      <a class="service-card" href="#booking"><span class="service-nr">02 / BEARD</span><div class="service-details"><h3>BAARD BIJWERKEN</h3><p data-tr="serviceDesc3">Scherpe lijnen en een nette afwerking.</p><span class="service-meta" data-tr="priceUponRequest">PRIJS OP AANVRAAG</span></div><span class="service-arrow" aria-hidden="true">↗</span></a>
-      <a class="service-card" href="#booking"><span class="service-nr">03 / COMPLETE</span><div class="service-details"><h3>KNIPPEN + BAARD</h3><p data-tr="serviceDesc2">Haar en baard, één verzorgde look.</p><span class="service-meta" data-tr="priceUponRequest">PRIJS OP AANVRAAG</span></div><span class="service-arrow" aria-hidden="true">↗</span></a>
+      <a class="service-card" href="#pricing" data-service-index="0"><span class="service-nr">01 / CUT</span><div class="service-details"><h3>HERENKNIPBEURT</h3><p data-tr="serviceDesc1">Een frisse coupe, perfect afgewerkt.</p><div class="service-price"><strong>€25</strong><small data-tr="examplePriceLabel">RICHTPRIJS*</small></div><span class="service-meta">30 MIN</span></div><span class="service-arrow" aria-hidden="true">↗</span></a>
+      <a class="service-card" href="#pricing" data-service-index="1"><span class="service-nr">02 / BEARD</span><div class="service-details"><h3>BAARD BIJWERKEN</h3><p data-tr="serviceDesc3">Scherpe lijnen en een nette afwerking.</p><div class="service-price"><strong>€15</strong><small data-tr="examplePriceLabel">RICHTPRIJS*</small></div><span class="service-meta">30 MIN</span></div><span class="service-arrow" aria-hidden="true">↗</span></a>
+      <a class="service-card" href="#pricing" data-service-index="2"><span class="service-nr">03 / COMPLETE</span><div class="service-details"><h3>KNIPPEN + BAARD</h3><p data-tr="serviceDesc2">Haar en baard, één verzorgde look.</p><div class="service-price"><strong>€35</strong><small data-tr="examplePriceLabel">RICHTPRIJS*</small></div><span class="service-meta">45 MIN</span></div><span class="service-arrow" aria-hidden="true">↗</span></a>
+      <a class="service-card" href="#pricing" data-service-index="3"><span class="service-nr">04 / STYLE</span><div class="service-details"><h3>HAARSTYLING</h3><p data-tr="serviceDesc4">De finishing touch voor jouw look.</p><div class="service-price"><strong>€20</strong><small data-tr="examplePriceLabel">RICHTPRIJS*</small></div><span class="service-meta">30 MIN</span></div><span class="service-arrow" aria-hidden="true">↗</span></a>
     </div>
   </div>
-  <p id="service-disclaimer" class="fine-note">Voorbeeldcategorieën · Laat definitieve diensten en prijzen bevestigen door de eigenaar.</p>
+  <p id="service-disclaimer" class="fine-note" role="note" data-tr="priceDisclosure">* VOORSTELPRIJZEN — nog niet bevestigd door BARBER NIZO. Geen officiële prijslijst. Exacte diensten, duur en prijzen worden door de eigenaar gecontroleerd vóór online boekingen.</p>
+  <div class="section-shell price-planner" id="pricing" aria-labelledby="planner-heading">
+    <div><p class="micro-label" data-tr="priceToolEyebrow">KIES JE LOOK</p><h3 id="planner-heading" data-tr="priceToolHeading">CHECK DE PRIJS<span class="lime-dot">.</span></h3><p id="pricing-disclaimer" class="fine-note" data-tr="priceToolDisclaimer">Indicatieve voorbeeldprijs. Nog niet bevestigd door de zaak.</p></div>
+    <label class="planner-select"><span data-tr="selectService">KIES BEHANDELING</span><select id="pricing-service" aria-label="Kies je behandeling"><option value="0">HERENKNIPBEURT</option><option value="1">BAARD BIJWERKEN</option><option value="2">KNIPPEN + BAARD</option><option value="3">HAARSTYLING</option></select></label>
+    <div class="planner-total"><span id="pricing-amount">€25</span><small id="pricing-duration">30 MIN</small></div>
+    <a href="#booking" id="pricing-cta" class="pill-button" data-tr="heroBook">PLAN JE AFSPRAAK</a>
+  </div>
 </section>
 
 <section class="about-band" id="about">
@@ -87,8 +95,8 @@
 
 <section class="gallery-section" id="gallery">
   <div class="section-shell">
-    <div class="gallery-heading"><div><p class="micro-label">03 — THE LOOK</p><h2 class="section-title">PRECISION<br><em>IN EVERY DETAIL.</em></h2></div><p data-tr="galleryLead">Een paar sfeerbeelden van barbering. Binnenkort echte foto's en resultaten van BARBER NIZO.</p></div>
-    <div class="gallery-grid"><div class="gallery-shot gallery-one"><span>FRESH FADES / 01</span></div><div class="gallery-shot gallery-two"><span>THE FINISH / 02</span></div><div class="gallery-shot gallery-three"><span>THE EXPERIENCE / 03</span></div></div>
+    <div class="gallery-heading"><div><p class="micro-label">03 — THE LOOK</p><h2 class="section-title">PRECISION<br><em>IN EVERY DETAIL.</em></h2></div><div class="gallery-action"><p data-tr="galleryLead">Een paar sfeerbeelden van barbering. Binnenkort echte foto's en resultaten van BARBER NIZO.</p><div class="gallery-controls"><button type="button" id="gallery-prev" aria-label="Vorige foto's">←</button><button type="button" id="gallery-next" aria-label="Volgende foto's">→</button></div></div></div>
+    <div class="gallery-grid"><div class="gallery-shot gallery-one"><span>FRESH FADES / 01</span></div><div class="gallery-shot gallery-two"><span>THE FINISH / 02</span></div><div class="gallery-shot gallery-three"><span>THE EXPERIENCE / 03</span></div><div class="gallery-shot gallery-four"><span>SHARP DETAILS / 04</span></div><div class="gallery-shot gallery-five"><span>THE CRAFT / 05</span></div></div>
     <p class="fine-note">Voorlopig illustratieve foto's; dit zijn geen foto's van klanten of het interieur van BARBER NIZO.</p>
   </div>
 </section>
@@ -137,6 +145,7 @@
   </div>
 </section>
 </main>
+<a class="mobile-booking-cta" href="#booking" data-tr="heroBook">PLAN JE AFSPRAAK ↗</a>
 <footer class="site-footer"><div class="section-shell footer-inner">
   <a class="footer-brand" href="#top"><img src="/static/nizo-neon-logo.svg" alt="BARBER NIZO" width="170" height="76"></a>
   <span>© <span id="year">2026</span> BARBER NIZO · GENT</span>

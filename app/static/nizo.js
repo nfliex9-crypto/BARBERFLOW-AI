@@ -3,6 +3,7 @@
   const $ = id => document.getElementById(id);
   const localeText = {
     nl: {
+      examplePriceLabel:'RICHTPRIJS*',priceDisclosure:'* VOORSTELPRIJZEN — nog niet bevestigd door BARBER NIZO. Geen officiële prijslijst. De eigenaar controleert alle prijzen vóór online boekingen.',priceToolEyebrow:'KIES JE LOOK',priceToolHeading:'CHECK DE PRIJS.',priceToolDisclaimer:'Indicatieve voorbeeldprijs, nog niet bevestigd door de zaak.',priceToolConfirmed:'Deze prijs is door de salonbeheerder ingesteld. Betaal pas in de zaak.',priceOnRequest:'OP AANVRAAG',serviceDesc4:'De finishing touch voor jouw look.',styleTitle:'HAARSTYLING',suggestedDuration:'min',
       navServices:'Services', navAbout:'Over ons',navVisit:'Locatie',navBook:'Boeken',
       ctaNav:'AFSPRAAK MAKEN ↗',heroSub:'Scherpe lijnen. Een frisse look. De barbershop in Gent voor jouw volgende afspraak.',
       heroBook:'PLAN JE AFSPRAAK',heroExplore:'ONTDEK SERVICES',callDirect:'Bel rechtstreeks',
@@ -32,6 +33,7 @@
       closed:'Gesloten',dayNames:['Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag','Zondag']
     },
     en: {
+      examplePriceLabel:'SUGGESTED*',priceDisclosure:'* SUGGESTED PRICES ONLY — not confirmed by BARBER NIZO. Not an official price list. The owner will verify all prices before online bookings.',priceToolEyebrow:'FIND YOUR STYLE',priceToolHeading:'CHECK THE PRICE.',priceToolDisclaimer:'Suggested example price only, not confirmed by the salon.',priceToolConfirmed:'This price was set by the salon owner. Payment is at the salon.',priceOnRequest:'ON REQUEST',serviceDesc4:'The finishing touch to your look.',styleTitle:'HAIR STYLING',suggestedDuration:'min',
       navServices:'Services',navAbout:'About',navVisit:'Find us',navBook:'Book',
       ctaNav:'BOOK APPOINTMENT ↗',heroSub:'Sharp lines. A fresh look. Your next visit starts here in Ghent.',
       heroBook:'REQUEST A BOOKING',heroExplore:'EXPLORE SERVICES',callDirect:'Call directly',
@@ -60,6 +62,7 @@
       dayNames:['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
     },
     fr: {
+      examplePriceLabel:'PRIX PROPOSÉ*',priceDisclosure:'* PRIX INDICATIFS UNIQUEMENT — non confirmés par BARBER NIZO. Cette liste n’est pas officielle. Le gérant vérifiera les tarifs avant la prise de rendez-vous.',priceToolEyebrow:'VOTRE STYLE',priceToolHeading:'DÉCOUVREZ LES PRIX.',priceToolDisclaimer:'Tarif indicatif non confirmé par le salon.',priceToolConfirmed:'Tarif enregistré par le gérant. Paiement sur place.',priceOnRequest:'SUR DEMANDE',serviceDesc4:'La touche finale de votre style.',styleTitle:'COIFFAGE',suggestedDuration:'min',
       navServices:'Prestations',navAbout:'À propos',navVisit:'Adresse',navBook:'Réserver',
       ctaNav:'PRENDRE RENDEZ-VOUS ↗',heroSub:'Des lignes nettes, un style soigné. Votre prochaine visite commence à Gand.',
       heroBook:'DEMANDER UN RENDEZ-VOUS',heroExplore:'NOS PRESTATIONS',callDirect:'Appeler directement',
@@ -93,6 +96,15 @@
   let site=null;
   let selectedTime=null;
   let generation=0;
+  const PRICING_PREVIEW = Object.freeze([
+    {name:'HERENKNIPBEURT',duration_minutes:30,price_cents:2500,desc:'serviceDesc1',label:'01 / CUT'},
+    {name:'BAARD BIJWERKEN',duration_minutes:30,price_cents:1500,desc:'serviceDesc3',label:'02 / BEARD'},
+    {name:'KNIPPEN + BAARD',duration_minutes:45,price_cents:3500,desc:'serviceDesc2',label:'03 / COMPLETE'},
+    {name:'HAARSTYLING',duration_minutes:30,price_cents:2000,desc:'serviceDesc4',label:'04 / STYLE'}
+  ]);
+  let visibleServices = PRICING_PREVIEW;
+  const motionReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   // Confirmed by the project contact, unlike third-party opening-hours directories.
   const NIZO_HOURS = Array.from({length:7},(_,weekday)=>({
     weekday, enabled: weekday===0?0:1,
@@ -136,29 +148,89 @@
       row.append(day,time);holder.append(row);
     });
   }
+  function showPrice(service,previewMode) {
+    const amount=Number(service.price_cents);
+    if (!Number.isFinite(amount)||amount<=0) return tr('priceOnRequest');
+    return '€'+(amount/100).toFixed(2).replace('.00','');
+  }
+  function labelFor(service,index,previewMode){
+    if(!previewMode) return service.name;
+    if(index===3) return tr('styleTitle');
+    return service.name;
+  }
+  function syncPlanner() {
+    const selector=$('pricing-service');
+    const old=selector.value;
+    selector.replaceChildren();
+    visibleServices.forEach((svc,index)=>selector.add(new Option(labelFor(svc,index,!site?.configured),String(index))));
+    if(Number(old)>=0&&Number(old)<visibleServices.length) selector.value=old;
+    else selector.value='0';
+    updatePricePanel();
+  }
+  function updatePricePanel(){
+    const index=Number($('pricing-service').value)||0;
+    const svc=visibleServices[index];
+    if(!svc)return;
+    $('pricing-amount').textContent=showPrice(svc,!site?.configured);
+    $('pricing-duration').textContent=svc.duration_minutes+' MIN';
+    $('pricing-disclaimer').textContent=site?.configured?tr('priceToolConfirmed'):tr('priceToolDisclaimer');
+    if(site?.configured && !svc.price_cents) $('pricing-disclaimer').textContent=tr('priceOnRequest');
+    if(site?.booking_enabled){
+      const booking=$('nizo-service');
+      if(booking && svc.id) booking.value=svc.id;
+    }
+  }
+  function observeReveals() {
+    if(!window.nizoRevealObserver)return;
+    if(motionReduced||!('IntersectionObserver' in window))return;
+    const observer=window.nizoRevealObserver;
+    document.querySelectorAll('.service-card,.gallery-shot,.services-intro,.about-text,.booking-surface,.info-box,.price-planner').forEach(el=>{
+      if(el.dataset.observed)return;
+      el.dataset.observed='true';
+      el.classList.add('motion-reveal');
+      observer.observe(el);
+    });
+  }
   function renderSite(){
     renderHours();
+    const previewMode=!site?.configured;
+    visibleServices=site?.configured&&Array.isArray(site.services)&&site.services.length
+      ?site.services:PRICING_PREVIEW;
     const cards=$('service-cards');
-    if(site.configured && site.services.length){
-      cards.replaceChildren();
-      site.services.forEach((svc,index)=>{
-        const card=document.createElement('article');card.className='service-card';
-        const nr=document.createElement('span');nr.className='service-nr';nr.textContent=String(index+1).padStart(2,'0');
-        const icon=document.createElement('span');icon.className='service-icon';icon.textContent=['✂','◈','✦'][index%3];
-        const heading=document.createElement('h3');heading.textContent=svc.name;
-        const meta=document.createElement('span');meta.className='service-meta';
-        meta.textContent=(svc.price_cents>0?'€'+(svc.price_cents/100).toFixed(2):tr('priceUponRequest'))+
-          ' · '+svc.duration_minutes+' MIN';
-        card.append(nr,icon,heading,meta);cards.append(card);
+    cards.replaceChildren();
+    visibleServices.forEach((svc,index)=>{
+      const card=document.createElement('a');
+      card.className='service-card';card.href='#pricing';card.dataset.serviceIndex=String(index);
+      const nr=document.createElement('span');nr.className='service-nr';
+      nr.textContent=previewMode?svc.label:String(index+1).padStart(2,'0')+' / SERVICE';
+      const details=document.createElement('div');details.className='service-details';
+      const title=document.createElement('h3');title.textContent=labelFor(svc,index,previewMode);
+      const desc=document.createElement('p');
+      desc.textContent=previewMode?tr(svc.desc):'BARBER NIZO · GENT';
+      const priceBlock=document.createElement('div');priceBlock.className='service-price';
+      const price=document.createElement('strong');price.textContent=showPrice(svc,previewMode);
+      const tag=document.createElement('small');
+      tag.textContent=previewMode?tr('examplePriceLabel'):'';
+      priceBlock.append(price,tag);
+      const meta=document.createElement('span');meta.className='service-meta';
+      meta.textContent=svc.duration_minutes+' MIN';
+      const arrow=document.createElement('span');arrow.className='service-arrow';
+      arrow.setAttribute('aria-hidden','true');arrow.textContent='↗';
+      details.append(title,desc,priceBlock,meta);card.append(nr,details,arrow);
+      card.addEventListener('click',()=>{
+        $('pricing-service').value=String(index);
+        updatePricePanel();
       });
-    }
-    $('service-disclaimer').hidden=!!site.published;
+      cards.append(card);
+    });
+    $('service-disclaimer').hidden=!previewMode && !!site.published;
+    syncPlanner();
     $('preview-notice').hidden=!!site.published;
     if(!site.booking_enabled){
       $('nizo-booking-form').hidden=true;
       $('phone-fallback').hidden=false;
       setNotice(tr('disabled'));
-
+      observeReveals();
       return;
     }
     $('nizo-booking-form').hidden=false;
@@ -167,11 +239,11 @@
     const input=$('nizo-service'),previous=input.value;
     input.replaceChildren();input.add(new Option(tr('servicePick'),''));
     site.services.forEach(service=>{
-      const cost=service.price_cents>0?'€'+(service.price_cents/100).toFixed(2):tr('priceUponRequest');
+      const cost=showPrice(service,false);
       input.add(new Option(service.name+' · '+service.duration_minutes+' min · '+cost,service.id));
     });
     if([...input.options].some(option=>option.value===previous))input.value=previous;
-
+    observeReveals();
   }
   async function refreshSlots(){
     const current=++generation;selectedTime=null;$('nizo-submit').disabled=true;
@@ -196,6 +268,44 @@
       });
     }catch(error){if(current===generation)setNotice(error.message,true);}
   }
+  function setupMotion(){
+    if(!motionReduced && 'IntersectionObserver' in window){
+      window.nizoRevealObserver=new IntersectionObserver(entries=>{
+        entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('motion-in');window.nizoRevealObserver.unobserve(entry.target);}});
+      },{rootMargin:'0px 0px -30px 0px',threshold:0.07});
+    }
+    const navLinks=[...document.querySelectorAll('.primary-nav a[href^="#"]')];
+    const sections=[...document.querySelectorAll('main section[id]')];
+    if('IntersectionObserver' in window){
+      const activeObserver=new IntersectionObserver(entries=>{
+        const visible=entries.filter(e=>e.isIntersecting).sort((a,b)=>b.intersectionRatio-a.intersectionRatio);
+        if(!visible.length)return;
+        const current=visible[0].target.id;
+        navLinks.forEach(link=>link.classList.toggle('nav-active',link.getAttribute('href')==='#'+current));
+      },{rootMargin:'-25% 0px -50% 0px',threshold:[0,.1,.25]});
+      sections.forEach(section=>activeObserver.observe(section));
+    }
+    const progress=$('reading-progress'),heroLogo=document.querySelector('.neon-on-wall');
+    let queued=false;
+    function paintScroll(){
+      queued=false;
+      const max=Math.max(1,document.documentElement.scrollHeight-window.innerHeight);
+      progress.style.transform='scaleX('+Math.max(0,Math.min(1,window.scrollY/max))+')';
+      if(!motionReduced&&heroLogo&&window.innerWidth>700){
+        heroLogo.style.setProperty('--scroll-offset',Math.min(120,window.scrollY*.14)+'px');
+      }
+      document.querySelector('.site-header')?.classList.toggle('is-scrolled',window.scrollY>42);
+    }
+    window.addEventListener('scroll',()=>{if(!queued){queued=true;requestAnimationFrame(paintScroll);}}, {passive:true});
+    paintScroll();
+    const gallery=document.querySelector('.gallery-grid');
+    const prev=$('gallery-prev'),next=$('gallery-next');
+    if(gallery&&prev&&next){
+      const advance=dir=>gallery.scrollBy({left:dir*Math.max(230,gallery.clientWidth*.62),behavior:motionReduced?'auto':'smooth'});
+      prev.addEventListener('click',()=>advance(-1));
+      next.addEventListener('click',()=>advance(1));
+    }
+  }
   async function load(){
     $('year').textContent=String(new Date().getFullYear());
     $('language').addEventListener('change',e=>{lang=e.target.value;localeApply();});
@@ -207,6 +317,8 @@
       $('mobile-panel').hidden=true;$('mobile-menu').setAttribute('aria-expanded','false');
     }));
     localeApply();
+    $('pricing-service').addEventListener('change',updatePricePanel);
+    setupMotion();
     try{site=await json('/api/nizo/site');renderSite();}
     catch(error){
       // Standalone hosting previews contain no API; keep the phone fallback usable.
