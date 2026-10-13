@@ -25,6 +25,27 @@
    return p.year+"-"+p.month+"-"+p.day;
  }
  const isSunday=day=>new Date(day+"T12:00:00Z").getUTCDay()===0;
+ function syncPublicPrices(){
+   const byId=new Map(state.services.map(service=>[service.id,service]));
+   document.querySelectorAll('.service-card[data-service]').forEach(card=>{
+     const s=byId.get(card.dataset.service);
+     card.hidden=!s||s.active===false;
+     if(!s||s.active===false)return;
+     const name=card.querySelector('.service-body h3');
+     const duration=card.querySelector('.service-body p');
+     const tag=card.querySelector('.service-body strong');
+     if(name)name.textContent=s.name;
+     if(duration)duration.textContent=s.minutes+' MIN';
+     if(tag){
+       tag.replaceChildren();
+       tag.append(document.createTextNode(euro(s.price_cents)+' '));
+       if(!s.price_confirmed)tag.append(document.createElement('small')).textContent='*';
+     }
+   });
+   const allOfficial=state.live&&state.services.length>0&&state.services.every(s=>s.price_confirmed);
+   document.querySelectorAll('.price-note').forEach(note=>note.hidden=!!allOfficial);
+ }
+
  function updateSummary(){
    const s=state.services.find(x=>x.id===state.service);
    $("summary-service").textContent=s?s.name:"—";
@@ -34,12 +55,12 @@
  }
  function renderServices(){
    const holder=$("booking-services");holder.replaceChildren();
-   state.services.forEach(s=>{
+   state.services.filter(s=>s.active!==false).forEach(s=>{
      const button=document.createElement("button");button.type="button";button.className="booking-service";
      button.setAttribute("role","radio");button.setAttribute("aria-checked",String(s.id===state.service));
      button.dataset.service=s.id;
      const text=document.createElement("span");text.className="booking-service-name";text.textContent=s.name;
-     const meta=document.createElement("small");meta.textContent=s.minutes+" MIN / "+euro(s.price_cents)+" *";
+     const meta=document.createElement("small");meta.textContent=s.minutes+" MIN / "+euro(s.price_cents)+(s.price_confirmed?"":" *");
      button.append(text,meta);
      button.addEventListener("click",()=>{
        if(state.service===s.id)return;state.service=s.id;state.time="";
@@ -152,7 +173,8 @@
      if(!res.ok)throw Error("no backend");const c=await res.json();
      if(!c.active||!Array.isArray(c.services)||!c.services.length)throw Error("inactive");
      state.services=c.services;state.live=true;state.dayLimit=c.advance_days||60;
-     renderServices();await loadSlots();
+     if(!state.services.some(x=>x.id===state.service))state.service=state.services[0].id;
+     syncPublicPrices();renderServices();await loadSlots();
    }catch{state.live=false;$("booking-times").textContent=lang().offline;say(lang().offline,"error");}
  }
  initialize();
