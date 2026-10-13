@@ -150,8 +150,8 @@ def test_nizo_social_links_and_opening_hours_in_rendered_preview():
     with TestClient(app) as client:
         response=client.get("/nizo")
         assert response.status_code==200
-        assert "TIKTOK ↗" in response.text
-        assert "INSTAGRAM ↗" in response.text
+        assert 'aria-label="TikTok BARBER NIZO"' in response.text
+        assert 'aria-label="Instagram BARBER NIZO"' in response.text
         assert "Dinsdag</span><span>10:00 – 19:00" in response.text
         assert "Zondag</span><span>10:00 – 17:00" in response.text
         assert "Maandag</span><span>Gesloten" in response.text
