@@ -40,14 +40,6 @@ export default async function handler(req,res) {
      const b=rows[0];
      return json(res,200,{status:b.status,date:b.day,time:String(Math.floor(b.start_min/60)).padStart(2,"0")+":"+String(b.start_min%60).padStart(2,"0"),service:b.service_key});
    }
-   if(req.method==="GET"&&action==="status"){
-     const id=String(req.query.id||""),token=String(req.query.token||"");
-     if(!/^[0-9a-f-]{36}$/i.test(id)||token.length<24)return json(res,400,{error:"Invalid reference"});
-     const rows=await sql`SELECT status,day::text,start_min,service_key,created_at
-       FROM nizo_appointments WHERE id=${id}::uuid AND customer_token_hash=${hashToken(token)}`;
-     if(!rows.length)return json(res,404,{error:"Booking reference not found"});
-     const b=rows[0];return json(res,200,{status:b.status,date:b.day,time:String(Math.floor(b.start_min/60)).padStart(2,"0")+":"+String(b.start_min%60).padStart(2,"0"),service:b.service_key});
-   }
    if(req.method==="POST"&&action==="request"){
      const body=limitBody(req);
      if(!body)return json(res,400,{error:"Invalid booking data"});
