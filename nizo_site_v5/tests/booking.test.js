@@ -15,7 +15,7 @@ function nextWeekday(n) {
 test("Monday-Saturday open 10–20, Sunday closed",()=>{
  assert.equal(availableStarts(nextWeekday(1),SERVICES.haircut).length,20);
  assert.equal(availableStarts(nextWeekday(6),SERVICES.haircut).at(-1).time,"19:30");
- assert.equal(isSunday(nextWeekday(0)),false);
+ assert.equal(isSunday(nextWeekday(1)),false);
 });
 test("Sunday never shows slots, and dates outside horizon are rejected",()=>{
  const actualSunday=nextWeekday(0);
