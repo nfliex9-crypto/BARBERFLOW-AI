@@ -6,3 +6,28 @@
 .cut-line{transform-origin:left center}
 
 @media(max-width:700px){.gallery-title{display:block}.gallery-controls{justify-content:flex-end;margin-top:18px}.hero-neon{width:63vw;right:13%;top:8%}.gallery-title h2{font-size:clamp(46px,11vw,70px)}}
+
+
+/* NIZO v6: scissors cut the entire actual viewport.
+   Two identical, clipped page snapshots peel apart to reveal booking beneath. */
+.scissor-overlay{z-index:900;perspective:1400px;isolation:isolate}
+.nizo-page-half{position:absolute;inset:0;background:#09070e;overflow:hidden;pointer-events:none;will-change:transform;backface-visibility:hidden;contain:layout paint}
+.nizo-page-top{
+  z-index:1;
+  clip-path:polygon(0 0,100% 0,100% calc(50% - 3px),89% calc(50% + 2px),76% calc(50% - 2px),62% calc(50% + 2px),48% calc(50% - 3px),35% calc(50% + 1px),19% calc(50% - 3px),0 calc(50% + 1px));
+  box-shadow:0 20px 50px #000d
+}
+.nizo-page-bottom{
+  z-index:1;
+  clip-path:polygon(0 calc(50% + 1px),19% calc(50% - 3px),35% calc(50% + 1px),48% calc(50% - 3px),62% calc(50% + 2px),76% calc(50% - 2px),89% calc(50% + 2px),100% calc(50% - 3px),100% 100%,0 100%)
+}
+.nizo-cut-snapshot{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.nizo-cut-snapshot *{pointer-events:none!important}
+.scissor-overlay .cut-line{top:0;left:0;z-index:3;width:100vw;transform-origin:left center;will-change:transform}
+.scissor-overlay .cut-flash{z-index:2;will-change:opacity}
+.scissor-overlay .scissor-icon{z-index:4}
+.scissor-overlay canvas{z-index:5;pointer-events:none}
+.nizo-page-cutting .scroll-indicator{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){
+ .nizo-page-half,.scissor-overlay .scissor-icon,.scissor-overlay .cut-line{display:none!important}
+}
