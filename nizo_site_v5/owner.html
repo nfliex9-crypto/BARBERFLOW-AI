@@ -22,17 +22,17 @@
 </style>
 <script defer src="owner.js"></script></head>
 <body><main class="owner-shell">
-<header class="owner-bar"><img class="owner-logo" src="assets/nizo-logo.svg" alt="BARBER NIZO"><a href="/">← WEBSITE</a></header>
+<header class="owner-bar"><img class="owner-logo" src="assets/nizo-logo.svg" alt="BARBER NIZO"><a href="/"><svg class="nizo-icon" aria-hidden="true"><use href="assets/nizo-icons.svg#arrow-left"></use></svg> WEBSITE</a></header>
 <h1 class="owner-heading">BOOKINGS<br><em>COMMAND CENTER.</em></h1>
 <p class="owner-lead">Private salon dashboard · Beheer nieuwe aanvragen, bevestigingen en annuleringen. Alleen voor de eigenaar.</p>
 <div id="owner-feedback" class="owner-feedback" role="status" aria-live="polite"></div>
 <section class="owner-panel" id="login-panel"><h2>OWNER LOGIN</h2><form id="login-form" class="owner-login">
 <label for="owner-password">Wachtwoord</label><input id="owner-password" name="password" type="password" autocomplete="current-password" required minlength="16">
-<button class="btn btn-lime" type="submit">SECURE SIGN IN ↗</button></form>
+<button class="btn btn-lime" type="submit">SECURE SIGN IN <svg class="nizo-icon" aria-hidden="true"><use href="assets/nizo-icons.svg#arrow-up-right"></use></svg></button></form>
 <p class="owner-note">Login is afgeschermd met een versleutelde, HttpOnly sessie. Stel je wachtwoord in via de privé Vercel-omgeving.</p>
 </section>
 <section class="owner-panel" id="dashboard-panel" hidden>
-<div class="owner-tools"><h2>APPOINTMENT REQUESTS</h2><div><button type="button" id="reload-bookings" class="btn btn-outline">↻ REFRESH</button> <button id="owner-logout" class="btn btn-outline" type="button">LOGOUT</button></div></div>
+<div class="owner-tools"><h2>APPOINTMENT REQUESTS</h2><div><button type="button" id="reload-bookings" class="btn btn-outline"><svg class="nizo-icon" aria-hidden="true"><use href="assets/nizo-icons.svg#refresh"></use></svg> REFRESH</button> <button id="owner-logout" class="btn btn-outline" type="button">LOGOUT</button></div></div>
 <div id="owner-metrics" class="owner-metrics"></div>
 <div id="booking-entries" class="booking-entries"></div>
 <p class="owner-note">"PENDING" requests hold the time for up to 48 hours. No SMS or automatic confirmation emails are enabled. Contact customers directly for now.</p>
