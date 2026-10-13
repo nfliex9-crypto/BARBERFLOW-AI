@@ -44,7 +44,7 @@ def test_cut_has_two_real_pieces_with_independent_motion():
 def test_owner_authorization_wording_updated_but_booking_not_faked():
     html = (SITE / "index.html").read_text(encoding="utf-8")
     assert "Confirmation required before live bookings" not in html
-    assert "Online afspraak telefonisch" in html
+    assert "Online afspraakaanvragen mogelijk" in html
     assert "tel:+32471821630" in html
     assert 'id="appointment-form"' in html
     assert 'booking-ui.js' in html
