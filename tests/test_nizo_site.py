@@ -159,3 +159,36 @@ def test_nizo_social_links_and_opening_hours_in_rendered_preview():
         assert js.status_code==200
         assert "const NIZO_HOURS" in js.text
         assert "renderHours()" in js.text
+
+
+
+def test_approved_neon_website_brand_and_verified_contact_details():
+    """Regression guard against wrong prices, opening hours, address and logo colors."""
+    with TestClient(app) as client:
+        response = client.get("/nizo")
+        assert response.status_code == 200
+        html = response.text
+        assert "MORE THAN" in html
+        assert "A HAIRCUT." in html
+        assert "nizo-neon-logo.svg" in html
+        assert "Phoenixstraat 81" in html
+        assert "0471 82 16 30" in html
+        assert "Maandag</span><span>Gesloten" in html
+        assert "Dinsdag</span><span>10:00 – 19:00" in html
+        assert "Zondag</span><span>10:00 – 17:00" in html
+        assert "PRIJS OP AANVRAAG" in html
+        assert "€ 25" not in html
+        for required in ("service-cards", "nizo-booking-form", "nizo-service", "nizo-date",
+                         "nizo-slots", "nizo-name", "nizo-email", "nizo-phone", "nizo-privacy",
+                         "booking-state", "phone-fallback", "mobile-menu", "mobile-panel",
+                         "hours-list", "language", "year", "preview-notice"):
+            assert f'id="{required}"' in html
+        assert client.get("/static/nizo.css").status_code == 200
+        assert client.get("/static/nizo.js").status_code == 200
+        sign = client.get("/static/nizo-neon-logo.svg")
+        assert sign.status_code == 200
+        assert "BARBER" in sign.text
+        assert "NIZO" in sign.text
+        assert "#eaff57" in sign.text
+        assert "#d36dff" in sign.text
+        assert "#f2fcff" in sign.text
