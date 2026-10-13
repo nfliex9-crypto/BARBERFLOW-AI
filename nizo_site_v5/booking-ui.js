@@ -119,6 +119,12 @@
      const block=$("booking-confirmation");block.hidden=false;
      $("confirmed-message").textContent=lang().confirmed;
      $("confirmed-reference").textContent=lang().requestId+": "+data.id.slice(0,13).toUpperCase()+" · "+state.date+" "+state.time;
+     const statusLink=$("booking-status-link");
+     if(statusLink&&typeof data.token==="string"&&data.token.length>=24){
+       const fragment=new URLSearchParams({id:data.id,token:data.token});
+       statusLink.href="status.html#"+fragment.toString();
+       statusLink.hidden=false;
+     }
      say(lang().hold,"success");block.focus();
    }catch(err){say(err.message||lang().failed,"error");}
    finally{state.loading=false;updateSummary();}
