@@ -2,83 +2,144 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111311"><meta name="color-scheme" content="dark">
-<meta name="description" content="BARBER NIZO · Gent. Herenkapsels, baardverzorging en afspraakaanvragen in Phoenixstraat 81, 9000 Gent.">
-<title>BARBER NIZO · Gent — Barber & Style</title>
+<meta name="color-scheme" content="dark"><meta name="theme-color" content="#080809">
+<meta name="description" content="BARBER NIZO — barbershop in Gent. Phoenixstraat 81, 9000 Gent. Maak een afspraak of bel 0471 82 16 30.">
+<meta name="robots" content="noindex,nofollow">
+<title>BARBER NIZO | Premium Barbershop Gent</title>
 <link rel="icon" href="/static/nizo-favicon.svg" type="image/svg+xml">
+<link rel="preload" href="/static/nizo-neon-logo.svg" as="image" type="image/svg+xml">
 <link rel="stylesheet" href="/static/nizo.css">
 <script src="/static/nizo.js" defer></script>
 </head>
 <body>
-<div class="announcement" id="preview-notice" role="status"><span class="pulse"></span> WEBSITE PREVIEW — Nog niet officieel gepubliceerd</div>
-<header class="header" id="top">
-  <a class="logo" href="/nizo" aria-label="BARBER NIZO home"><span class="logo-symbol">N<span class="logo-cut">/</span></span><span class="logo-type">BARBER <b>NIZO</b><small>GENT · BELGIUM</small></span></a>
-  <nav class="desktop-nav" aria-label="Primary"><a href="#services" data-tr="navServices">Services</a><a href="#about" data-tr="navAbout">Over ons</a><a href="#visit" data-tr="navVisit">Locatie</a><a href="#booking" data-tr="navBook">Boeken</a></nav>
-  <div class="nav-actions">
-    <select id="language" aria-label="Taal"><option value="nl">NL</option><option value="en">EN</option><option value="fr">FR</option></select>
-    <a class="button button-small button-accent" href="#booking" data-tr="ctaNav">AFSPRAAK MAKEN <span aria-hidden="true">↗</span></a>
-    <button type="button" id="mobile-menu" class="menu-toggle" aria-label="Menu" aria-expanded="false"><span></span><span></span></button>
+<div id="preview-notice" class="preview-banner" role="status"><span class="preview-pulse"></span> DESIGN PREVIEW · Boekingen pas na activering door de eigenaar</div>
+<header class="site-header" id="top">
+  <div class="header-inner">
+    <a class="brand-mark" href="#top" aria-label="BARBER NIZO, naar boven">
+      <img src="/static/nizo-neon-logo.svg" alt="BARBER NIZO neonlogo, wit, limegroen en paars" width="188" height="85">
+    </a>
+    <nav class="primary-nav" aria-label="Hoofdnavigatie">
+      <a href="#top" class="nav-active">HOME</a><a href="#services" data-tr="navServices">SERVICES</a><a href="#about" data-tr="navAbout">OVER ONS</a><a href="#gallery">GALLERY</a><a href="#visit" data-tr="navVisit">CONTACT</a>
+    </nav>
+    <div class="nav-actions">
+      <select id="language" aria-label="Taal kiezen"><option value="nl">NL</option><option value="en">EN</option><option value="fr">FR</option></select>
+      <a href="#booking" class="pill-button header-book"><span class="calendar-icon" aria-hidden="true">▣</span><span data-tr="ctaNav">AFSPRAAK MAKEN</span><span aria-hidden="true">↗</span></a>
+      <a class="social-icon social-header" href="https://www.instagram.com/barber_nizoo/" target="_blank" rel="noopener noreferrer" aria-label="Instagram BARBER NIZO">◎</a>
+      <a class="social-icon social-header" href="https://www.google.com/goto?url=CAESWwHrOzAVBx2M-_QDfVN_giWr1zQpTapUs0Qd3Pm_IyGZaSKsXwouOZO0aeymrpWCS23ueppeI0VuXNtjsxP7NAaqTTZ9_KVaL5JQxymUsK-ZBYIpwpZJopVGUiA" target="_blank" rel="noopener noreferrer" aria-label="TikTok BARBER NIZO">♪</a>
+      <button id="mobile-menu" class="menu-button" aria-label="Menu openen" aria-controls="mobile-panel" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
   </div>
+  <nav id="mobile-panel" class="mobile-panel" aria-label="Mobiele navigatie" hidden>
+    <a href="#top">HOME</a><a href="#services" data-tr="navServices">SERVICES</a><a href="#about" data-tr="navAbout">OVER ONS</a><a href="#gallery">GALLERY</a><a href="#booking" data-tr="navBook">BOEKEN</a><a href="#visit" data-tr="navVisit">CONTACT</a>
+  </nav>
 </header>
-<div id="mobile-panel" class="mobile-panel" hidden><a href="#services" data-tr="navServices">Services</a><a href="#about" data-tr="navAbout">Over ons</a><a href="#visit" data-tr="navVisit">Locatie</a><a href="#booking" data-tr="navBook">Boeken</a></div>
-
 <main>
-<section class="hero">
-  <div class="hero-copy">
-    <p class="eyebrow"><span class="small-dash"></span> EST. GENT <span class="eyebrow-point">/</span> PHOENIXSTRAAT 81</p>
-    <h1>NOT JUST<br>A <span>CUT.</span><br><i>YOUR</i> <span>STYLE.</span></h1>
-    <p class="hero-sub" data-tr="heroSub">Scherpe lijnen. Een frisse look. De barbershop in Gent voor jouw volgende afspraak.</p>
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="hero-image" role="img" aria-label="Sfeerbeeld van een stijlvolle barbershop, illustratief en niet van BARBER NIZO">
+    <div class="hero-image-shade"></div>
+    <div class="neon-on-wall"><img src="/static/nizo-neon-logo.svg" width="650" height="295" alt=""></div>
+    <span class="hero-image-caption">BARBER NIZO <span>✳</span> GENT</span>
+  </div>
+  <div class="hero-copy content-width">
+    <p class="eyebrow">PREMIUM BARBERSHOP <span>✳</span> GENT</p>
+    <h1 id="hero-heading">MORE THAN<br><em>A HAIRCUT.</em></h1>
+    <div class="lime-stroke"></div>
+    <p class="hero-lead" data-tr="heroSub">Scherpe lijnen. Een frisse look. Jouw barbershop in Gent voor de volgende afspraak.</p>
     <div class="hero-actions">
-      <a href="#booking" class="button button-accent button-big"><span data-tr="heroBook">PLAN JE AFSPRAAK</span> <span aria-hidden="true">↗</span></a>
-      <a href="#services" class="button button-outline button-big"><span data-tr="heroExplore">ONTDEK SERVICES</span> <span aria-hidden="true">↓</span></a>
+      <a href="#booking" class="pill-button pill-large"><span aria-hidden="true">▣</span><span data-tr="heroBook">PLAN JE AFSPRAAK</span><span aria-hidden="true">↗</span></a>
+      <a href="tel:+32471821630" class="outline-button pill-large"><span aria-hidden="true">☎</span><span data-tr="callDirect">BEL DIRECT</span></a>
     </div>
-    <div class="hero-facts"><span><b>GENT</b><small>9000 · België</small></span><span><b>PHOENIXSTRAAT</b><small>81 · Brugse Poort</small></span><span><b>+32 471 82 16 30</b><small data-tr="callDirect">Bel rechtstreeks</small></span></div>
+    <div class="hero-location"><span class="location-dot"></span> PHOENIXSTRAAT 81 <span class="small-sep">/</span> 9000 GENT</div>
   </div>
-  <div class="hero-art" aria-hidden="true"><div class="art-circles"><div class="ring ring-one"></div><div class="ring ring-two"></div><div class="ring ring-three"></div></div><div class="art-badge">N<span>〃</span></div><div class="art-caption">PRECISION <span>·</span> CHARACTER <span>·</span> STYLE</div><div class="art-number">01 / 03</div><div class="art-edge">B/N — GENT</div></div>
+  <div class="hero-counter">01 <span>/</span> 04</div>
 </section>
-<div class="ticker" aria-hidden="true"><div>BARBER NIZO &nbsp; ✳ &nbsp; GENT CITY &nbsp; ✳ &nbsp; CUTS & BEARDS &nbsp; ✳ &nbsp; YOUR STYLE &nbsp; ✳ &nbsp; BARBER NIZO &nbsp; ✳ &nbsp; GENT CITY &nbsp; ✳ &nbsp;</div></div>
+<div class="marquee" aria-hidden="true"><div>FRESH CUTS <span>✳</span> SHARP DETAILS <span>✳</span> BARBER NIZO <span>✳</span> GENT CITY <span>✳</span> FRESH CUTS <span>✳</span> SHARP DETAILS <span>✳</span></div></div>
 
-<section id="services" class="section services-section">
-  <div class="section-heading"><div><p class="eyebrow"><span class="small-dash"></span> 01 / <span data-tr="whatWeDo">ONZE SERVICES</span></p><h2 data-tr="servicesHeading">JOUW LOOK.<br><em>ONZE FOCUS.</em></h2></div><p data-tr="servicesLead">Van een frisse herensnit tot een strakke baard. Kies jouw behandeling en vraag een geschikt moment aan.</p></div>
-  <div id="service-cards" class="service-grid">
-    <article class="service-card"><span class="service-nr">01</span><span class="service-icon">✂</span><h3>Herenknipbeurt</h3><p data-tr="serviceDesc1">Frisse snit, passend bij jouw stijl.</p><span class="service-meta" data-tr="priceUponRequest">PRIJS OP AANVRAAG</span></article>
-    <article class="service-card"><span class="service-nr">02</span><span class="service-icon">◈</span><h3>Knippen + baard</h3><p data-tr="serviceDesc2">Haar en baard, één verzorgde look.</p><span class="service-meta" data-tr="priceUponRequest">PRIJS OP AANVRAAG</span></article>
-    <article class="service-card"><span class="service-nr">03</span><span class="service-icon">✦</span><h3>Baard bijwerken</h3><p data-tr="serviceDesc3">Scherpe contouren en nette afwerking.</p><span class="service-meta" data-tr="priceUponRequest">PRIJS OP AANVRAAG</span></article>
+<section class="services-block" id="services">
+  <div class="section-shell services-grid">
+    <div class="services-intro">
+      <p class="micro-label">01 — THE SERVICES</p>
+      <h2 class="section-title">OUR<br><em>SERVICES.</em></h2>
+      <div class="lime-stroke"></div>
+      <p data-tr="servicesLead">Van een verzorgde herensnit tot strakke baardlijnen — met aandacht voor stijl en detail.</p>
+      <a class="text-arrow" href="#booking"><span data-tr="navBook">AFSPRAAK</span> ↗</a>
+    </div>
+    <div id="service-cards" class="service-photos">
+      <a class="service-card" href="#booking"><span class="service-nr">01 / CUT</span><div class="service-details"><h3>HERENKNIPBEURT</h3><p data-tr="serviceDesc1">Een frisse coupe, perfect afgewerkt.</p><span class="service-meta" data-tr="priceUponRequest">PRIJS OP AANVRAAG</span></div><span class="service-arrow" aria-hidden="true">↗</span></a>
+      <a class="service-card" href="#booking"><span class="service-nr">02 / BEARD</span><div class="service-details"><h3>BAARD BIJWERKEN</h3><p data-tr="serviceDesc3">Scherpe lijnen en een nette afwerking.</p><span class="service-meta" data-tr="priceUponRequest">PRIJS OP AANVRAAG</span></div><span class="service-arrow" aria-hidden="true">↗</span></a>
+      <a class="service-card" href="#booking"><span class="service-nr">03 / COMPLETE</span><div class="service-details"><h3>KNIPPEN + BAARD</h3><p data-tr="serviceDesc2">Haar en baard, één verzorgde look.</p><span class="service-meta" data-tr="priceUponRequest">PRIJS OP AANVRAAG</span></div><span class="service-arrow" aria-hidden="true">↗</span></a>
+    </div>
   </div>
-  <p class="disclaimer" id="service-disclaimer" data-tr="servicePreview">Voorbeeldcategorieën. De eigenaar bevestigt de exacte diensten en prijzen vóór publicatie.</p>
+  <p id="service-disclaimer" class="fine-note">Voorbeeldcategorieën · Laat definitieve diensten en prijzen bevestigen door de eigenaar.</p>
 </section>
 
-<section id="about" class="story">
-  <div class="story-mark"><span>BN.</span><small>GENT / 9000</small></div>
-  <div class="story-text"><p class="eyebrow"><span class="small-dash"></span> 02 / <span data-tr="theBarber">THE BARBER</span></p><h2 data-tr="aboutHeading">EEN GOEDE<br>COUPE <em>IS PERSOONLIJK.</em></h2><p data-tr="aboutText">Een herkenbare barbershop in Phoenixstraat, Gent. Voor je volgende frisse coupe, strakke lijn of baardverzorging.</p><a href="https://www.google.com/goto?url=CAESZQHrOzAVG-YCKrWZ0B1dFVR2YcNnRGMhf-l0XDEycilK69eeN_Yr5X0Ku5EAvbHTb1stmIrpOAjsb0AuYvlNPH_PVcKh6Y5fANy4K6yMHhAMIpEkwmeZ95jC3vd1ZtzZiml6S5Ao" target="_blank" rel="noopener noreferrer" class="text-link">INSTAGRAM ↗</a> <a href="https://www.google.com/goto?url=CAESWwHrOzAVBx2M-_QDfVN_giWr1zQpTapUs0Qd3Pm_IyGZaSKsXwouOZO0aeymrpWCS23ueppeI0VuXNtjsxP7NAaqTTZ9_KVaL5JQxymUsK-ZBYIpwpZJopVGUiA" target="_blank" rel="noopener noreferrer" class="text-link">TIKTOK ↗</a></div>
+<section class="about-band" id="about">
+  <div class="about-photo"><span class="photo-label">THE CRAFT / THE DETAIL</span></div>
+  <div class="about-text">
+    <p class="micro-label">02 — THE EXPERIENCE</p>
+    <h2 class="section-title">ABOUT<br><em>BARBER NIZO.</em></h2>
+    <div class="lime-stroke"></div>
+    <p data-tr="aboutText">Een moderne barbershop aan de Phoenixstraat in Gent. Van klassieke coupes tot moderne fades: kwaliteit, precisie en een ontspannen sfeer.</p>
+    <a class="text-arrow" href="https://www.instagram.com/barber_nizoo/" target="_blank" rel="noopener noreferrer">FOLLOW THE CUTS ON INSTAGRAM ↗</a>
+  </div>
+  <div class="about-badge" aria-hidden="true"><span>BN.</span><small>GENT / 9000</small></div>
 </section>
 
-<section id="booking" class="section booking-section">
-  <div class="section-heading"><div><p class="eyebrow"><span class="small-dash"></span> 03 / <span data-tr="makeBooking">AFSPRAAK</span></p><h2 data-tr="bookingHeading">JOUW STOEL<br><em>WACHT OP JOU.</em></h2></div><p data-tr="bookingLead">Selecteer je behandeling, kies een tijdstip en stuur je aanvraag. Een afspraak is pas definitief na bevestiging door de barbershop.</p></div>
-  <div class="booking-layout">
-    <div class="booking-card">
-      <div class="booking-head"><div class="booking-label">BARBER NIZO / BOOKING</div><span class="small-symbol">✳</span></div>
-      <div id="booking-state" class="notice">De online boekingen worden voorbereid. Bel ons gerust rechtstreeks om een afspraak te maken.</div>
-      <form id="nizo-booking-form" class="book-form" hidden>
-        <label><span data-tr="selectService">Kies behandeling</span><select id="nizo-service" required><option value="">Laden…</option></select></label>
-        <label><span data-tr="selectDay">Datum</span><input id="nizo-date" type="date" required></label>
-        <div><div class="input-label" data-tr="selectTime">Beschikbare tijdstippen</div><div id="nizo-slots" class="slots-grid" role="group" aria-label="Beschikbare tijdstippen"></div></div>
-        <div class="form-row"><label><span data-tr="yourName">Jouw naam</span><input id="nizo-name" autocomplete="name" maxlength="70" minlength="2" required></label><label><span data-tr="yourEmail">E-mail</span><input id="nizo-email" type="email" autocomplete="email" maxlength="200" required></label></div>
-        <label><span data-tr="yourPhone">Telefoon (optioneel)</span><input id="nizo-phone" autocomplete="tel" type="tel" maxlength="35"></label>
-        <label class="checkbox-row"><input id="nizo-privacy" type="checkbox" required><span data-tr="consent">Ik geef toestemming om mijn gegevens te gebruiken voor mijn afspraakaanvraag. Meer informatie in het privacybeleid.</span></label>
-        <button type="submit" id="nizo-submit" class="button button-accent button-big wide" disabled data-tr="requestCta">VERSTUUR AANVRAAG ↗</button>
-        <p class="fineprint" data-tr="requestOnly">Je vraagt een afspraak aan. De barbershop moet deze nog bevestigen. Geen online betaling.</p>
+<section class="gallery-section" id="gallery">
+  <div class="section-shell">
+    <div class="gallery-heading"><div><p class="micro-label">03 — THE LOOK</p><h2 class="section-title">PRECISION<br><em>IN EVERY DETAIL.</em></h2></div><p data-tr="galleryLead">Een paar sfeerbeelden van barbering. Binnenkort echte foto's en resultaten van BARBER NIZO.</p></div>
+    <div class="gallery-grid"><div class="gallery-shot gallery-one"><span>FRESH FADES / 01</span></div><div class="gallery-shot gallery-two"><span>THE FINISH / 02</span></div><div class="gallery-shot gallery-three"><span>THE EXPERIENCE / 03</span></div></div>
+    <p class="fine-note">Voorlopig illustratieve foto's; dit zijn geen foto's van klanten of het interieur van BARBER NIZO.</p>
+  </div>
+</section>
+
+<section class="booking-block" id="booking">
+  <div class="section-shell booking-columns">
+    <div class="booking-copy">
+      <p class="micro-label">04 — YOUR APPOINTMENT</p><h2 class="section-title">YOUR NEXT<br><em>FRESH CUT.</em></h2><div class="lime-stroke"></div>
+      <p data-tr="bookingLead">Kies je behandeling en stuur een aanvraag. Je afspraak is pas definitief na bevestiging door de barbershop.</p>
+      <div class="booking-help"><span>☎</span><div><small data-tr="needHelp">LIEVER BELLEN?</small><a href="tel:+32471821630">0471 82 16 30 ↗</a></div></div>
+    </div>
+    <div class="booking-surface">
+      <div class="booking-topline">BARBER NIZO <span>✳</span> GENT / BOOKING</div>
+      <div id="booking-state" class="booking-status" role="status" aria-live="polite">Online boeken wordt voorbereid. Bel voor een afspraak.</div>
+      <form id="nizo-booking-form" class="booking-form" hidden>
+        <label><span data-tr="selectService">KIES BEHANDELING</span><select id="nizo-service" required><option value="">Even laden…</option></select></label>
+        <label><span data-tr="selectDay">DATUM</span><input type="date" id="nizo-date" required></label>
+        <div><p class="input-label" data-tr="selectTime">BESCHIKBARE TIJDSTIPPEN</p><div id="nizo-slots" class="slots-grid" role="group" aria-label="Beschikbare tijdstippen"></div></div>
+        <div class="form-row"><label><span data-tr="yourName">NAAM</span><input id="nizo-name" required minlength="2" maxlength="70" autocomplete="name"></label><label><span data-tr="yourEmail">E-MAIL</span><input type="email" id="nizo-email" required maxlength="200" autocomplete="email"></label></div>
+        <label><span data-tr="yourPhone">TELEFOON (OPTIONEEL)</span><input id="nizo-phone" type="tel" maxlength="35" autocomplete="tel"></label>
+        <label class="privacy-row"><input type="checkbox" id="nizo-privacy" required><span data-tr="consent">Ik ga akkoord met het gebruik van mijn contactgegevens om mijn afspraakaanvraag te behandelen. Lees het privacybeleid.</span></label>
+        <button id="nizo-submit" type="submit" class="pill-button full-button" disabled data-tr="requestCta">VERSTUUR AANVRAAG ↗</button>
+        <p class="fine-note" data-tr="requestOnly">Dit is een aanvraag, geen bevestigde afspraak. Geen online betaling.</p>
       </form>
-      <a id="phone-fallback" class="button button-accent wide" href="tel:+32471821630" data-tr="callToBook">BEL VOOR EEN AFSPRAAK ↗</a>
+      <a id="phone-fallback" class="pill-button full-button" href="tel:+32471821630"><span data-tr="callToBook">BEL VOOR EEN AFSPRAAK ↗</span></a>
     </div>
-    <aside class="contact-card"><div class="contact-decor">N<span>/</span></div><div><p class="eyebrow" data-tr="needHelp">LIEVER BELLEN?</p><h3 data-tr="contactHeading">STRAK GEKNIPT.<br>GOED GEPLAND.</h3><p data-tr="contactText">Vragen over een behandeling? Neem rechtstreeks contact op met de barbershop.</p><a class="contact-number" href="tel:+32471821630">0471 82 16 30 <span>↗</span></a></div></aside>
   </div>
 </section>
 
-<section id="visit" class="section visit-section">
-  <div class="visit-copy"><p class="eyebrow"><span class="small-dash"></span> 04 / <span data-tr="findUs">VIND ONS</span></p><h2 data-tr="visitHeading">IN HET HART<br><em>VAN GENT.</em></h2><p>PHOENIXSTRAAT 81<br>9000 GENT, BELGIË</p><a class="button button-outline" href="https://www.google.com/maps/search/?api=1&amp;query=BARBER%20NIZO%20Phoenixstraat%2081%20Gent" target="_blank" rel="noopener noreferrer"><span data-tr="directions">ROUTEBESCHRIJVING</span> ↗</a><div class="hours-area"><h3 data-tr="openingHours">OPENINGSUREN</h3><div id="hours-list" class="hours-list"><div class="hours-row"><span>Maandag</span><span>Gesloten</span></div><div class="hours-row"><span>Dinsdag</span><span>10:00 – 19:00</span></div><div class="hours-row"><span>Woensdag</span><span>10:00 – 19:00</span></div><div class="hours-row"><span>Donderdag</span><span>10:00 – 19:00</span></div><div class="hours-row"><span>Vrijdag</span><span>10:00 – 19:00</span></div><div class="hours-row"><span>Zaterdag</span><span>10:00 – 19:00</span></div><div class="hours-row"><span>Zondag</span><span>10:00 – 17:00</span></div></div></div></div>
-  <a class="map-visual" href="https://www.google.com/maps/search/?api=1&amp;query=BARBER%20NIZO%20Phoenixstraat%2081%20Gent" target="_blank" rel="noopener noreferrer" aria-label="BARBER NIZO op Google Maps"><span class="map-grid"></span><span class="map-pin">N.</span><span class="map-caption">PHOENIXSTRAAT <b>81</b><small>GENT · 9000</small></span><span class="map-arrow">↗</span></a>
+<section class="visit-block" id="visit">
+  <div class="section-shell info-columns">
+    <div class="info-box hours-box"><p class="micro-label">05 — WHEN TO VISIT</p><h2>OPENING <em>HOURS</em></h2><div id="hours-list" class="hours-list" aria-label="Openingsuren">
+      <div class="hours-row"><span>Maandag</span><span>Gesloten</span></div>
+      <div class="hours-row"><span>Dinsdag</span><span>10:00 – 19:00</span></div>
+      <div class="hours-row"><span>Woensdag</span><span>10:00 – 19:00</span></div>
+      <div class="hours-row"><span>Donderdag</span><span>10:00 – 19:00</span></div>
+      <div class="hours-row"><span>Vrijdag</span><span>10:00 – 19:00</span></div>
+      <div class="hours-row"><span>Zaterdag</span><span>10:00 – 19:00</span></div>
+      <div class="hours-row"><span>Zondag</span><span>10:00 – 17:00</span></div>
+    </div></div>
+    <div class="info-box find-box"><p class="micro-label">06 — COME THROUGH</p><h2>FIND US <em>IN GENT</em></h2><a class="contact-line" href="https://www.google.com/maps/search/?api=1&amp;query=BARBER%20NIZO%20Phoenixstraat%2081%20Gent" target="_blank" rel="noopener noreferrer"><span class="icon-round">⌖</span><span>Phoenixstraat 81<br>9000 Gent, België</span></a><a class="contact-line" href="tel:+32471821630"><span class="icon-round">☎</span><span>0471 82 16 30</span></a>
+      <div class="footer-social"><a href="https://www.instagram.com/barber_nizoo/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">◎</a><a href="https://www.google.com/goto?url=CAESWwHrOzAVBx2M-_QDfVN_giWr1zQpTapUs0Qd3Pm_IyGZaSKsXwouOZO0aeymrpWCS23ueppeI0VuXNtjsxP7NAaqTTZ9_KVaL5JQxymUsK-ZBYIpwpZJopVGUiA" target="_blank" rel="noopener noreferrer" aria-label="TikTok">♪</a></div>
+      <a class="outline-button directions-button" href="https://www.google.com/maps/search/?api=1&amp;query=BARBER%20NIZO%20Phoenixstraat%2081%20Gent" target="_blank" rel="noopener noreferrer" data-tr="directions">ROUTEBESCHRIJVING ↗</a>
+    </div>
+    <a class="map-panel" href="https://www.google.com/maps/search/?api=1&amp;query=BARBER%20NIZO%20Phoenixstraat%2081%20Gent" target="_blank" rel="noopener noreferrer" aria-label="Kaart en route naar BARBER NIZO"><span class="map-grid"></span><span class="map-symbol">⌖</span><span class="map-city">GENT <small>PHOENIXSTRAAT 81</small></span></a>
+  </div>
 </section>
 </main>
-<footer class="footer"><div class="footer-top"><a class="footer-logo" href="#top">BARBER <b>NIZO</b><span>.</span></a><a href="#booking" class="footer-cta"><span data-tr="bottomCta">JOUW VOLGENDE COUPE?</span> <b>↗</b></a></div><div class="footer-bottom"><span>© <span id="year">2026</span> BARBER NIZO — GENT</span><span><a href="/nizo/privacy" data-tr="privacyPolicy">PRIVACY</a> <a href="https://www.google.com/goto?url=CAESZQHrOzAVG-YCKrWZ0B1dFVR2YcNnRGMhf-l0XDEycilK69eeN_Yr5X0Ku5EAvbHTb1stmIrpOAjsb0AuYvlNPH_PVcKh6Y5fANy4K6yMHhAMIpEkwmeZ95jC3vd1ZtzZiml6S5Ao" target="_blank" rel="noopener noreferrer">INSTAGRAM ↗</a> <a href="https://www.google.com/goto?url=CAESWwHrOzAVBx2M-_QDfVN_giWr1zQpTapUs0Qd3Pm_IyGZaSKsXwouOZO0aeymrpWCS23ueppeI0VuXNtjsxP7NAaqTTZ9_KVaL5JQxymUsK-ZBYIpwpZJopVGUiA" target="_blank" rel="noopener noreferrer">TIKTOK ↗</a> <a href="/app" data-tr="ownerPortal">BEHEERDER</a></span><small data-tr="credits">Websitepilot gebouwd met BarberFlow</small></div></footer>
+<footer class="site-footer"><div class="section-shell footer-inner">
+  <a class="footer-brand" href="#top"><img src="/static/nizo-neon-logo.svg" alt="BARBER NIZO" width="170" height="76"></a>
+  <span>© <span id="year">2026</span> BARBER NIZO · GENT</span>
+  <div class="footer-links"><a href="/nizo/privacy" data-tr="privacyPolicy">PRIVACY</a><a href="/app" data-tr="ownerPortal">BEHEERDER</a><a href="#top">↑ BACK TO TOP</a></div>
+</div></footer>
 </body></html>
