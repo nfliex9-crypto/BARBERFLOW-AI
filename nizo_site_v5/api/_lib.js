@@ -74,3 +74,27 @@ export function errorResponse(res,e){
   console.error("NIZO DB/API error",String(e?.message||e).replace(/postgres(?:ql)?:\/\/[^\s]+/gi,"[redacted]"));
   return json(res,503,{error:"Booking temporarily unavailable. Call 0471 82 16 30."});
 }
+
+export async function getSalonServices(sql){
+ const rows=await sql`SELECT service_key,name,duration_minutes,price_cents,active,price_confirmed
+   FROM nizo_services ORDER BY CASE service_key
+     WHEN 'haircut' THEN 1 WHEN 'beard' THEN 2 WHEN 'combo' THEN 3 WHEN 'styling' THEN 4 END`;
+ return rows.map(s=>({
+   id:s.service_key,name:s.name,minutes:Number(s.duration_minutes),
+   price_cents:Number(s.price_cents),active:!!s.active,price_confirmed:!!s.price_confirmed
+ }));
+}
+export async function findSalonService(sql,key){
+ if(!Object.hasOwn(SERVICES,key))return null;
+ const services=await getSalonServices(sql);
+ return services.find(s=>s.id===key&&s.active)||null;
+}
+export async function isClosedDate(sql,day){
+ const rows=await sql`SELECT 1 FROM nizo_closed_dates WHERE day=${day}::date LIMIT 1`;
+ return rows.length>0;
+}
+export function shiftDay(day,n){
+ const date=new Date(day+"T12:00:00Z");
+ date.setUTCDate(date.getUTCDate()+n);
+ return date.toISOString().slice(0,10);
+}
