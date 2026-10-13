@@ -2,7 +2,8 @@ import crypto from "node:crypto";
 import {
  SERVICES, LIMIT_DAYS, localNow, validDay, daysFromNow, isSunday,
  availableStarts, getSql, json, limitBody, strip, requireSameOrigin,
- clientHash, hashToken, rateLimit, expirePending, errorResponse
+ clientHash, hashToken, rateLimit, expirePending, errorResponse,
+ getSalonServices, findSalonService, isClosedDate
 } from "./_lib.js";
 export default async function handler(req,res) {
  const action=String(req.query?.action||"config");
@@ -11,22 +12,24 @@ export default async function handler(req,res) {
  try{
    const sql=getSql();
    if(req.method==="GET"&&action==="config"){
+      const services=(await getSalonServices(sql)).filter(s=>s.active);
       return json(res,200,{
-        active:true, timezone:"Europe/Brussels",open:"10:00",close:"20:00",closed_weekdays:[0],
+        active:services.length>0, timezone:"Europe/Brussels",open:"10:00",close:"20:00",closed_weekdays:[0],
         booking_type:"request_only",pending_expires_hours:48,advance_days:LIMIT_DAYS,
-        prices_are_proposed:true,
-        services:Object.entries(SERVICES).map(([id,s])=>({id,...s}))
+        prices_are_proposed:services.some(s=>!s.price_confirmed),services
       });
    }
    if(req.method==="GET"&&action==="slots"){
      const date=String(req.query.date||""), key=String(req.query.service||"");
-     if(!validDay(date)||!SERVICES[key])return json(res,400,{error:"Choose a valid date and service"});
-     if(isSunday(date))return json(res,200,{date,service:key,slots:[],closed:true});
+     if(!validDay(date)||!Object.hasOwn(SERVICES,key))return json(res,400,{error:"Choose a valid date and service"});
+     const service=await findSalonService(sql,key);
+     if(!service)return json(res,400,{error:"This service is no longer available"});
+     if(isSunday(date)||await isClosedDate(sql,date))return json(res,200,{date,service:key,slots:[],closed:true});
      if(daysFromNow(date)<0||daysFromNow(date)>LIMIT_DAYS)return json(res,400,{error:"Date outside booking window"});
      await expirePending(sql);
      const busy=await sql`SELECT start_min,end_min FROM nizo_appointments
        WHERE day=${date}::date AND status IN ('pending','confirmed')`;
-     const slots=availableStarts(date,SERVICES[key],busy);
+     const slots=availableStarts(date,{minutes:service.minutes},busy);
      return json(res,200,{date,service:key,slots,closed:false});
    }
    if(req.method==="POST"&&action==="status"){
@@ -47,11 +50,13 @@ export default async function handler(req,res) {
      if(body.consent!==true)return json(res,400,{error:"Consent is required"});
      const date=String(body.date||""),service=String(body.service||""),time=String(body.time||"");
      const name=strip(body.name,70),email=strip(body.email,200).toLowerCase(),phone=strip(body.phone,35);
-     if(!validDay(date)||!SERVICES[service]||isSunday(date)||daysFromNow(date)<0||daysFromNow(date)>LIMIT_DAYS) return json(res,400,{error:"Invalid date or service"});
+     if(!validDay(date)||!Object.hasOwn(SERVICES,service)||isSunday(date)||daysFromNow(date)<0||daysFromNow(date)>LIMIT_DAYS) return json(res,400,{error:"Invalid date or service"});
+     const details=await findSalonService(sql,service);
+     if(!details||await isClosedDate(sql,date))return json(res,409,{error:"Service or date unavailable"});
      if(name.length<2||name.length>70||!/^.{1,80}@.{2,160}\.[a-z]{2,}$/i.test(email)||phone.length>35)return json(res,400,{error:"Enter valid name and email"});
      if(!/^(?:1[0-9]|20):(?:00|30)$/.test(time))return json(res,400,{error:"Choose one of the available times"});
      const minute=Number(time.slice(0,2))*60+Number(time.slice(3));
-     if(!availableStarts(date,SERVICES[service]).some(s=>s.minute===minute))return json(res,409,{error:"Time no longer available"});
+     if(!availableStarts(date,{minutes:details.minutes}).some(s=>s.minute===minute))return json(res,409,{error:"Time no longer available"});
      const ipKey=clientHash(req,"reservation");
      const permitted=await rateLimit(sql,ipKey,6);
      if(!permitted)return json(res,429,{error:"Too many requests. Please call the salon."});
@@ -59,7 +64,7 @@ export default async function handler(req,res) {
      const token=crypto.randomBytes(32).toString("base64url");
      const rows=await sql`INSERT INTO nizo_appointments
        (day,start_min,end_min,service_key,customer_name,customer_email,customer_phone,customer_token_hash,ip_hash)
-       VALUES (${date}::date,${minute},${minute+SERVICES[service].minutes},${service},${name},${email},${phone},${hashToken(token)},${ipKey})
+       VALUES (${date}::date,${minute},${minute+details.minutes},${service},${name},${email},${phone},${hashToken(token)},${ipKey})
        RETURNING id,day::text,start_min,status`;
      const inserted=rows[0];
      return json(res,201,{
