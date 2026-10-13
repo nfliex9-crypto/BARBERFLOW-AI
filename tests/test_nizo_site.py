@@ -176,8 +176,8 @@ def test_approved_neon_website_brand_and_verified_contact_details():
         assert "Maandag</span><span>Gesloten" in html
         assert "Dinsdag</span><span>10:00 – 19:00" in html
         assert "Zondag</span><span>10:00 – 17:00" in html
-        assert "PRIJS OP AANVRAAG" in html
-        assert "€ 25" not in html
+        assert "VOORSTELPRIJZEN" in html
+        assert "Geen officiële prijslijst" in html
         for required in ("service-cards", "nizo-booking-form", "nizo-service", "nizo-date",
                          "nizo-slots", "nizo-name", "nizo-email", "nizo-phone", "nizo-privacy",
                          "booking-state", "phone-fallback", "mobile-menu", "mobile-panel",
