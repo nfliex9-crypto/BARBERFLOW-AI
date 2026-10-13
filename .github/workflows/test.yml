@@ -36,6 +36,7 @@ jobs:
           node --check nizo_site_v5/booking-ui.js
           node --check nizo_site_v5/motion-ux.js
           node --check nizo_site_v5/owner.js
+          node --check nizo_site_v5/status.js
           node --check nizo_site_v5/api/booking.js
           node --check nizo_site_v5/api/nizo-admin.js
           node --check nizo_site_v5/api/_lib.js
