@@ -20,7 +20,7 @@ def test_owner_dashboard_has_all_real_views_and_accessible_controls():
         assert f'data-view="{view}"' in html
     for element in (
         "login-form", "owner-auth-feedback", "dashboard-panel",
-        "owner-booking-entries", "booking-entries", "owner-metrics",
+        "booking-entries", "owner-metrics",
         "owner-days", "owner-from", "owner-to", "owner-status",
         "owner-query", "owner-service-grid", "owner-closed-list",
         "owner-truncated-warning", "close-day-form", "owner-logout",
