@@ -46,7 +46,9 @@ def test_owner_authorization_wording_updated_but_booking_not_faked():
     assert "Confirmation required before live bookings" not in html
     assert "Online afspraak telefonisch" in html
     assert "tel:+32471821630" in html
-    assert "Online boekingen worden voorbereid" in html
+    assert 'id="appointment-form"' in html
+    assert 'booking-ui.js' in html
+    assert 'id="booking-confirmation"' in html
     assert "assets/nizo-1.webp" in html
     for number in range(1, 6):
         assert (SITE / "assets" / f"nizo-{number}.webp").is_file()
