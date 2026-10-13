@@ -10,6 +10,10 @@
 <link rel="stylesheet" href="styles.css">
 <script defer src="app.js"></script>
 <script defer src="page-cut.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/themes/dark.css">
+<script defer src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+<script defer src="booking-ui.js"></script>
+<script type="module" src="motion-ux.js"></script>
 </head>
 <body>
 <div id="scroll-progress" aria-hidden="true"></div>
@@ -41,10 +45,49 @@
 <figure><img src="assets/nizo-5.webp" alt="Barber knipt klant bij BARBER NIZO" loading="lazy"><figcaption>01 / THE CRAFT</figcaption></figure><figure><img src="assets/nizo-4.webp" alt="Klant met afgewerkte coupe" loading="lazy"><figcaption>02 / THE RESULT</figcaption></figure><figure><img src="assets/nizo-3.webp" alt="Klant met frisse snit" loading="lazy"><figcaption>03 / THE DETAILS</figcaption></figure><figure><img src="assets/nizo-2.webp" alt="Tondeuse en detailwerk" loading="lazy"><figcaption>04 / THE PROCESS</figcaption></figure><figure><img src="assets/nizo-1.webp" alt="Fade haircut in het salon" loading="lazy"><figcaption>05 / THE FADE</figcaption></figure>
 </div><div class="gallery-foot"><span>DRAG TO EXPLORE ↗</span><a href="https://www.instagram.com/barber_nizoo/" target="_blank" rel="noopener noreferrer">INSTAGRAM ↗</a></div>
 </section>
-<section class="booking-section" id="booking" aria-labelledby="booking-heading"><div class="booking-left reveal"><p class="eyebrow">04 / GET IN THE CHAIR</p><h2 id="booking-heading">READY FOR<br><em>YOUR CUT?</em></h2><p data-tr="bookingMessage">Online boekingen worden voorbereid. Bel rechtstreeks voor een afspraak; je kunt ook het werk van de barber op Instagram bekijken.</p><div class="booking-calls"><a href="tel:+32471821630" class="btn btn-lime btn-big" data-tr="call">BEL OM TE BOEKEN ↗</a><a class="btn btn-outline btn-big" target="_blank" rel="noopener noreferrer" href="https://www.instagram.com/barber_nizoo/">INSTAGRAM ↗</a></div><span class="booking-trust">BOOKING STATUS / PREVIEW ONLY · NO ONLINE FORM LIVE</span></div><div class="booking-right reveal"><img src="assets/nizo-logo.svg" alt="BARBER NIZO" loading="lazy"><span>PRECISION. PERSONALITY. NIZO.</span></div></section>
+<section class="booking-section" id="booking" aria-labelledby="booking-heading">
+<div class="booking-left reveal"><p class="eyebrow">04 / YOUR SEAT IS WAITING</p>
+<h2 id="booking-heading">BOOK YOUR<br><em>FRESH CUT.</em></h2>
+<p data-tr="bookingLeadFull">Kies je behandeling, selecteer een datum en een vrij tijdstip. Je ontvangt eerst een aanvraagnummer; de kapper bevestigt de afspraak persoonlijk.</p>
+<div class="booking-summary" id="booking-summary"><span>01 / <b data-tr="selectTreatment">BEHANDELING</b></span><strong id="summary-service">HERENKNIPBEURT</strong><span>02 / <b data-tr="selectDate">DATUM</b></span><strong id="summary-date">—</strong><span>03 / <b data-tr="selectTime">TIJD</b></span><strong id="summary-time">—</strong></div>
+<div class="booking-help"><span class="flicker-dot"></span> EUROPE / BRUSSELS — MA–ZA 10:00–20:00</div>
+</div>
+<div class="booking-panel reveal">
+<div class="booking-panel-heading"><div><span class="booking-kicker">NIZO / RESERVATIONS</span><h3 data-tr="bookYourAppointment">MAAK JE AFSPRAAK</h3></div><span class="booking-step-count">01 — 03</span></div>
+<div id="booking-feedback" class="booking-feedback" role="status" aria-live="polite">Beschikbaarheid laden…</div>
+<form id="appointment-form" class="appointment-form" novalidate>
+<div class="booking-stage">
+  <p class="input-label"><span class="stage-number">01</span><span data-tr="selectTreatment">KIES JE BEHANDELING</span></p>
+  <div id="booking-services" class="booking-services" role="radiogroup" aria-label="Behandeling"></div>
+  <p class="price-note" data-tr="priceNote">* Voorstelprijzen ter illustratie, geen officiële prijslijst. Laat de eigenaar prijzen en behandelingen bevestigen.</p>
+</div>
+<div class="booking-stage">
+  <label for="booking-date" class="input-label"><span class="stage-number">02</span><span data-tr="selectDate">KIES JE DATUM</span></label>
+  <div class="date-input-group"><input id="booking-date" type="date" required aria-describedby="date-hint"><span class="date-calendar-icon" aria-hidden="true">▦</span></div>
+  <p id="date-hint" class="booking-helper" data-tr="dateHint">Maandag t/m zaterdag, maximaal 60 dagen vooraf. Zondag gesloten.</p>
+  <div id="date-strip" class="date-strip" aria-label="Komende dagen"></div>
+</div>
+<div class="booking-stage">
+  <p class="input-label"><span class="stage-number">03</span><span data-tr="selectTime">KIES JE TIJDSTIP</span></p>
+  <div id="booking-times" class="booking-times" role="group" aria-label="Beschikbare tijdstippen"><span class="booking-helper">Selecteer eerst een datum.</span></div>
+</div>
+<div class="booking-stage booking-client-stage">
+  <p class="input-label"><span class="stage-number">04</span><span data-tr="yourDetails">JOUW GEGEVENS</span></p>
+  <div class="booking-input-row"><label><span data-tr="yourName">NAAM</span><input type="text" name="name" autocomplete="name" minlength="2" maxlength="70" required></label><label><span data-tr="yourEmail">E-MAIL</span><input type="email" name="email" autocomplete="email" maxlength="200" required></label></div>
+  <label><span data-tr="yourPhone">TELEFOON (OPTIONEEL)</span><input name="phone" type="tel" autocomplete="tel" maxlength="35"></label>
+  <label class="honeypot" aria-hidden="true">Leave this blank<input name="website" autocomplete="off" tabindex="-1"></label>
+  <label class="privacy-check"><input type="checkbox" name="consent" required><span data-tr="bookingConsent">Ik ga akkoord met het bewaren van mijn gegevens voor deze afspraakaanvraag. Dit is nog geen definitieve boeking.</span></label>
+  <p class="booking-helper"><a href="#booking-privacy" data-tr="privacyDetails">Lees hoe we gegevens verwerken</a></p>
+</div>
+<button type="submit" id="booking-submit" class="btn btn-lime btn-big booking-submit" disabled><span data-tr="requestBooking">VERSTUUR AFSPRAAKAANVRAAG</span> ↗</button>
+<p class="booking-helper" data-tr="bookingDisclaimer">Je betaalt niets online. De kapper bevestigt handmatig. Zonder bevestiging is er geen afspraak.</p>
+</form>
+<div id="booking-confirmation" class="booking-confirmation" hidden tabindex="-1"><div class="confirm-icon">✓</div><h3 data-tr="requestReceived">AANVRAAG ONTVANGEN</h3><p id="confirmed-message"></p><div id="confirmed-reference" class="confirmed-reference"></div><button id="booking-reset" type="button" class="btn btn-outline" data-tr="bookAnother">NOG EEN AANVRAAG</button></div>
+<div id="booking-privacy" class="privacy-explainer"><strong>PRIVACY</strong><p data-tr="privacyExplanation">We bewaren alleen de naam, contactgegevens en de gekozen afspraak om je aanvraag te behandelen. De aanvraag wordt niet automatisch bevestigd. Bel 0471 82 16 30 om je gegevens te laten aanpassen of verwijderen.</p></div>
+</div></section>
 <section class="section contact-section" id="contact"><div class="contact-columns"><div id="hours" class="reveal"><p class="eyebrow">05 / OPENING HOURS</p><h2>WHEN TO <em>VISIT.</em></h2><div class="hours-table"><div><span data-tr="monday">Maandag</span><b>10:00 – 20:00</b></div><div><span data-tr="tuesday">Dinsdag</span><b>10:00 – 20:00</b></div><div><span data-tr="wednesday">Woensdag</span><b>10:00 – 20:00</b></div><div><span data-tr="thursday">Donderdag</span><b>10:00 – 20:00</b></div><div><span data-tr="friday">Vrijdag</span><b>10:00 – 20:00</b></div><div><span data-tr="saturday">Zaterdag</span><b>10:00 – 20:00</b></div><div><span data-tr="sunday">Zondag</span><b data-tr="closed">GESLOTEN</b></div></div></div><div class="reveal"><p class="eyebrow">06 / FIND US</p><h2>COME <em>THROUGH.</em></h2><p class="contact-address">⌖ &nbsp; Phoenixstraat 81<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9000 Gent, België</p><a class="phone" href="tel:+32471821630">☎ &nbsp; 0471 82 16 30</a><a class="btn btn-outline" target="_blank" rel="noopener noreferrer" href="https://www.google.com/maps/search/?api=1&amp;query=BARBER%20NIZO%20Phoenixstraat%2081%20Gent">ROUTEBESCHRIJVING ↗</a><div class="social-links"><a href="https://www.instagram.com/barber_nizoo/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">◎</a><a href="https://www.google.com/goto?url=CAESWwHrOzAVBx2M-_QDfVN_giWr1zQpTapUs0Qd3Pm_IyGZaSKsXwouOZO0aeymrpWCS23ueppeI0VuXNtjsxP7NAaqTTZ9_KVaL5JQxymUsK-ZBYIpwpZJopVGUiA" target="_blank" rel="noopener noreferrer" aria-label="Zoek BARBER NIZO op TikTok">♪</a></div></div></div></section>
 </main>
-<footer><img src="assets/nizo-logo.svg" alt="BARBER NIZO" loading="lazy"><div>© <span id="year">2026</span> BARBER NIZO · GENT <small>BARBER NIZO · Online reserveren voorlopig telefonisch.</small></div><a href="#top">BACK TO TOP ↑</a></footer>
+<footer><img src="assets/nizo-logo.svg" alt="BARBER NIZO" loading="lazy"><div>© <span id="year">2026</span> BARBER NIZO · GENT <small>BARBER NIZO · Online reserveren voorlopig telefonisch.</small></div><a href="owner.html" aria-label="Salon management">OWNER ↗</a><a href="#top">BACK TO TOP ↑</a></footer>
 <a href="#booking" class="mobile-book" data-tr="book">AFSPRAAK MAKEN ↗</a>
 <div id="scissor-overlay" class="scissor-overlay" aria-hidden="true" hidden><div class="cut-flash"></div><div class="cut-line"></div><div class="scissor-icon" id="scissor-icon"><svg viewBox="0 0 180 150" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g fill="none" stroke="#e8ff53" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><path class="cut-blade-a" d="M95 72 L169 18"/><path class="cut-blade-b" d="M95 72 L172 128"/><path d="M95 72 L61 105"/><path d="M95 72 L103 113"/><circle cx="44" cy="116" r="19"/><circle cx="111" cy="125" r="19"/></g><circle cx="95" cy="72" r="6" fill="#d76bff"/></svg></div><canvas id="hair-canvas"></canvas></div>
 </body></html>
