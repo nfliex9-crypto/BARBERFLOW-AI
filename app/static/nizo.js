@@ -107,8 +107,8 @@
 
   // Confirmed by the project contact, unlike third-party opening-hours directories.
   const NIZO_HOURS = Array.from({length:7},(_,weekday)=>({
-    weekday, enabled: weekday===0?0:1,
-    opens:'10:00',closes:weekday===6?'17:00':'19:00'
+    weekday, enabled: weekday===6?0:1,
+    opens:'10:00',closes:'20:00'
   }));
   function tr(key){return localeText[lang][key]||key;}
   function setNotice(message,err=false){
