@@ -26,7 +26,7 @@ async function update(id,status){
  if(!confirm("Change booking to "+status+"?"))return;
  try{
    await api("update","POST",{id,status});
-   message("Saved booking "+id.slice(0,8)+" → "+status);
+   message("Saved booking "+id.slice(0,8)+" to "+status);
    await refresh();
  }catch(e){message(e.message);}
 }
@@ -50,7 +50,7 @@ function render(data){
    if(b.status==="pending"){
      for(const status of ["confirmed","declined"]){
        const button=document.createElement("button");
-       button.type="button";button.textContent=status==="confirmed"?"CONFIRM ✓":"DECLINE ×";
+       button.type="button";button.textContent=status==="confirmed"?"CONFIRM":"DECLINE";
        button.className=status==="confirmed"?"accept":"decline";
        button.addEventListener("click",()=>update(b.id,status));actions.append(button);
      }
