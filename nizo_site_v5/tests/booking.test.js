@@ -13,13 +13,12 @@ function nextWeekday(n) {
  throw Error("Weekday unavailable");
 }
 test("Monday-Saturday open 10–20, Sunday closed",()=>{
- assert.equal(availableStarts(nextWeekday(0),SERVICES.haircut).length,20);
+ assert.equal(availableStarts(nextWeekday(1),SERVICES.haircut).length,20);
  assert.equal(availableStarts(nextWeekday(6),SERVICES.haircut).at(-1).time,"19:30");
  assert.equal(isSunday(nextWeekday(0)),false);
 });
 test("Sunday never shows slots, and dates outside horizon are rejected",()=>{
- const sunday=nextWeekday(0+0); // Monday: use addDays
- const actualSunday=addDays(sunday,6);
+ const actualSunday=nextWeekday(0);
  assert.equal(isSunday(actualSunday),true);
  assert.equal(availableStarts(actualSunday,SERVICES.beard).length,0);
  assert.equal(availableStarts(addDays(localNow().day,80),SERVICES.beard).length,0);
