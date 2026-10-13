@@ -33,6 +33,17 @@ jobs:
           node --check app/static/nizo-owner.js
           node --check nizo_site_v5/app.js
           node --check nizo_site_v5/page-cut.js
+          node --check nizo_site_v5/booking-ui.js
+          node --check nizo_site_v5/motion-ux.js
+          node --check nizo_site_v5/owner.js
+          node --check nizo_site_v5/api/booking.js
+          node --check nizo_site_v5/api/nizo-admin.js
+          node --check nizo_site_v5/api/_lib.js
+      - name: NIZO calendar unit tests
+        run: |
+          cd nizo_site_v5
+          npm install --no-audit --no-fund
+          node --test tests/*.test.js
       - name: Validate API-only Docker Compose without SMTP credentials
         env:
           APP_SECRET: "ci-only-not-an-actual-production-secret-which-is-long-enough"
