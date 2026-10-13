@@ -124,3 +124,24 @@
  .nizo-pointer-aura{display:none}
 }
 @media(prefers-reduced-motion:reduce){.booking-feedback{animation:none!important}.booking-service:hover,.booking-time:hover{transform:none}}
+
+/* V7 icon system: professionally drawn, consistent stroke-based SVG, no emoji fonts */
+[hidden]{display:none!important}
+.nizo-icon{width:19px;height:19px;min-width:16px;display:inline-block;flex:0 0 auto;stroke:currentColor;stroke-width:1.85;stroke-linecap:round;stroke-linejoin:round;fill:none;vertical-align:-.22em;transition:transform .2s ease}
+a:hover>.nizo-icon,button:hover>.nizo-icon,a:hover b>.nizo-icon{transform:translate(2px,-2px)}
+.nav-cta,.hero-actions a,.social-links a,.phone,.gallery-controls button,.gallery-foot a,.status-back{display:inline-flex;align-items:center;justify-content:center;gap:9px}
+.nav-cta .nizo-icon{width:17px;height:17px}
+.hero-meta>span{display:inline-flex;align-items:center;gap:9px}
+.hero-meta .nizo-icon{color:var(--violet);width:17px;height:17px}
+.mini-neon-dot{width:6px;height:6px;background:var(--lime);display:inline-block;border-radius:50%;box-shadow:0 0 12px #dfff52;flex:none}
+.service-body a .nizo-icon{width:23px;height:23px}
+.gallery-controls button .nizo-icon{height:20px;width:20px}
+.gallery-foot .nizo-icon{color:var(--violet)}
+.date-calendar-icon .nizo-icon{width:23px;height:23px}
+.confirm-icon .nizo-icon{height:37px;width:37px}
+.social-links a .nizo-icon{width:24px;height:24px}
+.contact-address .nizo-icon,.phone .nizo-icon{width:21px;height:21px;color:var(--violet)}
+.mobile-book,.booking-submit,#booking-status-link{display:inline-flex;justify-content:center;align-items:center;gap:10px}
+#booking-status-link{width:100%;margin-top:13px}
+.owner-bar .nizo-icon,.owner-login .nizo-icon,.owner-tools .nizo-icon{width:18px;height:18px}
+@media(prefers-reduced-motion:reduce){.nizo-icon{transition:none}a:hover>.nizo-icon,button:hover>.nizo-icon{transform:none}}
