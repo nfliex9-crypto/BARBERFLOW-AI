@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="660" height="286" viewBox="0 0 660 286" role="img" aria-labelledby="title">
+<title id="title">BARBER NIZO</title>
+<defs>
+<filter id="white"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="lime"><feGaussianBlur stdDeviation="4.8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="violet"><feGaussianBlur stdDeviation="5.8" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<path d="M405 23H72Q19 23 19 77V196Q19 244 69 244H275 M557 23H588Q643 23 643 79V183Q643 237 588 237" fill="none" stroke="#f4faff" stroke-width="6" stroke-linecap="round" filter="url(#white)"/>
+<text x="39" y="139" fill="#e6fa55" font-family="'Segoe Print','Comic Sans MS',cursive" font-weight="900" font-size="88" font-style="italic" letter-spacing="-6" filter="url(#lime)">BARBER</text>
+<text x="270" y="245" fill="#d57bff" font-family="Impact,'Arial Narrow',sans-serif" font-weight="900" font-size="125" letter-spacing="-5" filter="url(#violet)">NIZO</text>
+<g stroke="#cd74fa" fill="none" stroke-width="7" stroke-linecap="round" filter="url(#violet)"><path d="M493 137C452 99 455 39 476 33C503 24 517 93 522 119C527 91 540 25 566 33C589 43 582 103 539 137"/><circle cx="521" cy="143" r="9"/><path d="M519 156L478 205M532 154L568 203"/></g>
+</svg>
