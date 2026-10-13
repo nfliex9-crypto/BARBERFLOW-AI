@@ -10,6 +10,38 @@ let rafRequested=false;const onScroll=()=>{rafRequested=false;const max=Math.max
 addEventListener('scroll',()=>{if(!rafRequested){rafRequested=true;requestAnimationFrame(onScroll)}},{passive:true});onScroll();
 if('IntersectionObserver' in window&&!reduce.matches){const o=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');o.unobserve(e.target)}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(x=>{x.classList.add('will-animate');o.observe(x)})}else document.querySelectorAll('.reveal').forEach(x=>x.classList.add('visible'));
 const track=$('gallery-track');$('gallery-prev').addEventListener('click',()=>track.scrollBy({left:-track.clientWidth*.72,behavior:reduce.matches?'auto':'smooth'}));$('gallery-next').addEventListener('click',()=>track.scrollBy({left:track.clientWidth*.72,behavior:reduce.matches?'auto':'smooth'}));
+// Keep the sticky mobile booking action out of the hero and off the form.
+// Safari must never display two giant calls to action at the same time.
+const stickyBooking=document.querySelector('.mobile-book');
+const heroSection=document.querySelector('.hero');
+const bookingSection=document.querySelector('#booking');
+if(stickyBooking&&heroSection&&bookingSection){
+  const sections={hero:true,booking:false};
+  const syncSticky=()=>{
+    const onSmallScreen=window.matchMedia('(max-width:700px)').matches;
+    stickyBooking.classList.toggle('is-visible',onSmallScreen&&!sections.hero&&!sections.booking);
+  };
+  if('IntersectionObserver' in window){
+    const observer=new IntersectionObserver(entries=>{
+      for(const entry of entries){
+        if(entry.target===heroSection)sections.hero=entry.isIntersecting;
+        if(entry.target===bookingSection)sections.booking=entry.isIntersecting;
+      }
+      syncSticky();
+    },{threshold:0.01});
+    observer.observe(heroSection);observer.observe(bookingSection);
+  }else{
+    const inspect=()=>{
+      const h=heroSection.getBoundingClientRect(),b=bookingSection.getBoundingClientRect();
+      sections.hero=h.bottom>0&&h.top<innerHeight;
+      sections.booking=b.bottom>0&&b.top<innerHeight;
+      syncSticky();
+    };
+    window.addEventListener('scroll',inspect,{passive:true});inspect();
+  }
+  window.addEventListener('resize',syncSticky,{passive:true});syncSticky();
+}
+
 // The independent page-cut.js module owns the booking transition.
 
 })();

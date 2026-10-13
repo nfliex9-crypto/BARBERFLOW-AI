@@ -9,8 +9,14 @@ def test_brand_icons_are_svg_not_emoji():
     sprite=read("assets/nizo-icons.svg")
     for icon in ("instagram","tiktok","phone","pin","calendar","check","arrow-up-right"):
         assert f'id="{icon}"' in sprite
-    assert "assets/nizo-icons.svg#" in html
-    assert "assets/nizo-icons.svg#" in owner
+    # Inline paths instead of external SVG <use> fix iPhone Safari's
+    # black filled triangles / intrinsic 300x150 icon boxes.
+    for page in (html, owner, read("status.html")):
+        assert 'assets/nizo-icons.svg#' not in page
+        assert 'class="nizo-icon"' in page
+        assert 'width="20" height="20" viewBox="0 0 24 24"' in page
+        assert 'stroke="currentColor"' in page
+        assert 'fill="none"' in page
     for markup in (html,owner,app,js):
         for glyph in ("✦","●","▦","✓","⌖","☎","◎","♪","↗","↻","←","→","↑","↓"):
             assert glyph not in markup, f"Unexpected glyph: {glyph}"

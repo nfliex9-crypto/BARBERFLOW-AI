@@ -145,3 +145,138 @@ a:hover>.nizo-icon,button:hover>.nizo-icon,a:hover b>.nizo-icon{transform:transl
 #booking-status-link{width:100%;margin-top:13px}
 .owner-bar .nizo-icon,.owner-login .nizo-icon,.owner-tools .nizo-icon{width:18px;height:18px}
 @media(prefers-reduced-motion:reduce){.nizo-icon{transition:none}a:hover>.nizo-icon,button:hover>.nizo-icon{transform:none}}
+
+
+/* V9 MOBILE ACTION SYSTEM — fixes oversized black SVG triangles on iPhone Safari.
+   Self-contained stroked icons are rendered inline with explicit viewBox / width / height.
+   Hard size limits prevent icons from expanding link and button boxes. */
+:root {
+  --action-height: 54px;
+  --action-radius: 16px;
+  --action-gutter: 16px;
+}
+svg.nizo-icon, .btn svg.nizo-icon, .mobile-book svg.nizo-icon {
+  display:inline-block!important;
+  width:20px!important;
+  height:20px!important;
+  min-width:20px!important;
+  min-height:20px!important;
+  max-width:20px!important;
+  max-height:20px!important;
+  flex:0 0 20px!important;
+  overflow:visible;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.9;
+  vertical-align:middle;
+}
+svg.nizo-icon path,svg.nizo-icon rect,svg.nizo-icon circle{
+  vector-effect:non-scaling-stroke;
+}
+.btn,.btn-big,.nav-cta{
+  box-sizing:border-box;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex-flow:row nowrap;
+  gap:12px;
+  min-height:var(--action-height);
+  height:auto;
+  max-width:100%;
+  padding:14px 22px;
+  border-radius:var(--action-radius);
+  font-family:var(--body);
+  font-size:12px;
+  font-weight:900;
+  line-height:1.22;
+  letter-spacing:.055em;
+  text-decoration:none;
+  text-align:center;
+  white-space:normal;
+  -webkit-tap-highlight-color:transparent;
+  transition:background .18s ease,border-color .18s ease,
+             box-shadow .18s ease,transform .18s ease;
+}
+.btn>b{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;min-width:20px;line-height:0;}
+.btn:active,.mobile-book:active{transform:translateY(1px) scale(.99)}
+.btn-lime{box-shadow:0 5px 24px rgba(213,253,55,.18);}
+.btn-lime:hover{box-shadow:0 8px 26px rgba(213,253,55,.29);}
+.hero-actions{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:stretch;
+  gap:12px;
+  margin:26px 0 39px;
+}
+.hero-actions>.btn{
+  min-height:60px;
+  padding:16px 22px;
+  border-radius:19px;
+  font-size:13px;
+  flex:0 1 auto;
+  min-width:187px;
+}
+.hero-actions .btn svg.nizo-icon{width:20px!important;height:20px!important}
+.nav-cta{min-height:45px;padding:11px 16px;min-width:0;border-radius:13px;font-size:11px;}
+.booking-submit{width:100%;min-height:54px;border-radius:14px;gap:12px;}
+.gallery-controls button{display:grid;place-items:center;line-height:0;}
+.gallery-controls button svg.nizo-icon{width:19px!important;height:19px!important}
+.service-body a{display:grid!important;place-items:center!important;line-height:0;}
+.service-body a svg.nizo-icon{width:18px!important;height:18px!important;min-width:18px!important;min-height:18px!important;max-width:18px!important;max-height:18px!important;flex:0 0 18px!important;}
+.mobile-book{display:none;}
+/* Fixed CTA only appears once the hero is out of view, avoids duplicate controls. */
+@media(max-width:700px){
+  .hero{min-height:min(730px,100svh);height:auto;}
+  .hero-content{padding-top:240px;padding-bottom:35px;}
+  .hero-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:11px;margin:25px 0 27px;}
+  .hero-actions>.btn{
+    display:flex;
+    justify-content:space-between;
+    width:100%;
+    min-width:0;
+    min-height:58px;
+    max-height:70px;
+    padding:14px 19px;
+    border-radius:18px;
+    font-size:12px;
+    line-height:1.2;
+    text-align:left;
+    box-shadow:0 7px 22px rgba(0,0,0,.12);
+  }
+  .hero-actions>.btn-lime{box-shadow:0 6px 22px rgba(213,253,55,.2)}
+  .hero-actions .btn>b{margin-left:auto}
+  .hero-actions .btn svg.nizo-icon{margin-left:auto;}
+  .mobile-book{
+    display:none;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    min-height:52px;
+    height:52px;
+    max-height:52px;
+    width:auto;
+    max-width:calc(100vw - 36px);
+    padding:0 19px;
+    border-radius:16px;
+    right:17px;
+    left:auto;
+    bottom:max(16px,env(safe-area-inset-bottom));
+    z-index:140;
+    font-size:11px;
+    line-height:1;
+    box-shadow:0 9px 30px #0009,0 0 14px rgba(225,255,70,.21);
+  }
+  .mobile-book.is-visible{display:inline-flex!important}
+  .nav-cta{display:none}
+  .booking-panel,.booking-section,.service-card{min-width:0}
+  .booking-submit{min-height:54px;padding:14px 17px}
+}
+@media(max-width:390px){
+  .hero-actions>.btn{min-height:55px;font-size:11px;}
+  .hero-content{padding-top:215px;}
+  .mobile-book{right:12px;max-width:calc(100vw - 24px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .btn,.btn-big,.mobile-book{transition:none!important;}
+  .btn:hover,.btn:active,.mobile-book:active{transform:none!important;}
+}
