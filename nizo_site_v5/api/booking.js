@@ -29,6 +29,17 @@ export default async function handler(req,res) {
      const slots=availableStarts(date,SERVICES[key],busy);
      return json(res,200,{date,service:key,slots,closed:false});
    }
+   if(req.method==="POST"&&action==="status"){
+     const body=limitBody(req,500);
+     const id=String(body?.id||""),token=String(body?.token||"");
+     if(!/^[0-9a-f-]{36}$/i.test(id)||token.length<24)return json(res,400,{error:"Invalid reference"});
+     await expirePending(sql);
+     const rows=await sql`SELECT status,day::text,start_min,service_key FROM nizo_appointments
+       WHERE id=${id}::uuid AND customer_token_hash=${hashToken(token)}`;
+     if(!rows.length)return json(res,404,{error:"Booking reference not found"});
+     const b=rows[0];
+     return json(res,200,{status:b.status,date:b.day,time:String(Math.floor(b.start_min/60)).padStart(2,"0")+":"+String(b.start_min%60).padStart(2,"0"),service:b.service_key});
+   }
    if(req.method==="GET"&&action==="status"){
      const id=String(req.query.id||""),token=String(req.query.token||"");
      if(!/^[0-9a-f-]{36}$/i.test(id)||token.length<24)return json(res,400,{error:"Invalid reference"});
