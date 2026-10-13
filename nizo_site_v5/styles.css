@@ -31,3 +31,13 @@
 @media(prefers-reduced-motion:reduce){
  .nizo-page-half,.scissor-overlay .scissor-icon,.scissor-overlay .cut-line{display:none!important}
 }
+
+/* Precision SVG scissors; alternating blades make the full-page cut visible. */
+.scissor-overlay .scissor-icon{font-size:0;width:170px;height:160px;transform-origin:90px 80px;filter:drop-shadow(0 0 16px #d46aff);backface-visibility:hidden}
+.scissor-overlay .scissor-icon svg{display:block;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 0 7px #dfff55)}
+.scissor-overlay .cut-blade-a,.scissor-overlay .cut-blade-b{transform-box:fill-box;transform-origin:0 100%;animation:nizo-snip-a .18s ease-in-out infinite alternate}
+.scissor-overlay .cut-blade-b{animation-name:nizo-snip-b;transform-origin:0 0}
+@keyframes nizo-snip-a{from{transform:rotate(-13deg)}to{transform:rotate(11deg)}}
+@keyframes nizo-snip-b{from{transform:rotate(11deg)}to{transform:rotate(-13deg)}}
+@media(max-width:700px){.scissor-overlay .scissor-icon{width:120px;height:120px}}
+@media(prefers-reduced-motion:reduce){.scissor-overlay .cut-blade-a,.scissor-overlay .cut-blade-b{animation:none}}
