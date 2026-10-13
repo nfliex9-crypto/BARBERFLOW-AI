@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="740" height="330" viewBox="0 0 740 330" role="img" aria-label="BARBER NIZO neon logo">
+<defs>
+<filter id="w" x="-50%" y="-75%" width="200%" height="250%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="g" x="-50%" y="-75%" width="200%" height="250%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="p" x="-50%" y="-75%" width="200%" height="250%"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<path d="M468 32 H78 Q29 32 29 79 V236 Q29 273 69 273 H275 M585 32 H645 Q705 32 705 91 V214 Q705 265 648 265 H634" fill="none" stroke="#f2fcff" stroke-width="8" stroke-linecap="round" filter="url(#w)" opacity=".96"/>
+<g transform="translate(53 173) rotate(-5)" fill="#eaff57" stroke="#eaff57" stroke-width="1.4" filter="url(#g)"><text x="0" y="0" font-family="'Segoe Print','Comic Sans MS',cursive" font-style="italic" font-weight="700" font-size="103" letter-spacing="-6">BARBER</text></g>
+<text x="300" y="278" font-family="Impact,'Arial Narrow',sans-serif" font-weight="800" font-size="129" letter-spacing="-5" fill="#d36dff" stroke="#ad36f2" stroke-width="2" filter="url(#p)">NIZO</text>
+<g transform="translate(515 28)" stroke="#d978ff" stroke-width="10" stroke-linejoin="round" stroke-linecap="round" fill="none" filter="url(#p)">
+<path d="M48 149 C10 117 1 41 22 21 C49 -3 66 76 69 110 C72 71 90 0 116 22 C139 44 112 117 85 149"/>
+<circle cx="62" cy="141" r="13"/>
+<path d="M61 154 L6 228 M76 154 L123 222"/>
+</g>
+</svg>
