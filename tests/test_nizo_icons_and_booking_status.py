@@ -15,7 +15,7 @@ def test_brand_icons_are_svg_not_emoji():
         for glyph in ("✦","●","▦","✓","⌖","☎","◎","♪","↗","↻","←","→","↑","↓"):
             assert glyph not in markup, f"Unexpected glyph: {glyph}"
     assert 'class="confirm-icon"' in html
-    assert "Afspraakaanvragen mogelijk" in html
+    assert "afspraakaanvragen mogelijk" in html
 
 def test_saved_booking_returns_private_status_link_and_post_api():
     html=read("index.html")
