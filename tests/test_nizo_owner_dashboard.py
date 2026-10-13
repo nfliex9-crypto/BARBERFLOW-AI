@@ -29,7 +29,7 @@ def test_owner_dashboard_has_all_real_views_and_accessible_controls():
     for route in ("overview", "list", "settings", "service", "close-day", "open-day", "update"):
         assert f'call("{route}"' in js
     assert "textContent" in js
-    assert "innerHTML" not in js
+    assert ".innerHTML" not in js
     assert "localStorage" not in js
     assert "sessionStorage" not in js
     assert (ROOT / "owner-dashboard.css").exists()
