@@ -192,3 +192,32 @@ def test_approved_neon_website_brand_and_verified_contact_details():
         assert "#eaff57" in sign.text
         assert "#d36dff" in sign.text
         assert "#f2fcff" in sign.text
+
+
+def test_preview_prices_are_explicitly_unconfirmed_and_interactive():
+    """The website has an honest example rate card, not false official pricing."""
+    with TestClient(app) as client:
+        response=client.get("/nizo")
+        assert response.status_code==200,response.text
+        html=response.text
+        assert "VOORSTELPRIJZEN" in html
+        assert "Geen officiële prijslijst" in html
+        assert 'id="pricing-service"' in html
+        assert 'id="pricing-amount"' in html
+        assert 'id="pricing-duration"' in html
+        assert 'id="service-cards"' in html
+        assert 'id="gallery-prev"' in html and 'id="gallery-next"' in html
+        assert 'id="reading-progress"' in html
+        assert 'class="mobile-booking-cta"' in html
+        assert "€25" in html and "€15" in html and "€35" in html and "€20" in html
+        script=client.get("/static/nizo.js")
+        assert script.status_code==200
+        assert "site?.configured" in script.text
+        assert "PRICING_PREVIEW" in script.text
+        assert "IntersectionObserver" in script.text
+        assert "prefers-reduced-motion" in script.text
+        css=client.get("/static/nizo.css")
+        assert css.status_code==200
+        assert "price-planner" in css.text
+        assert "scroll-snap-type" in css.text
+        assert "reading-progress" in css.text
