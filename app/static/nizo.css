@@ -236,3 +236,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
   .motion-reveal{opacity:1!important;transform:none!important;transition:none!important}
   .neon-on-wall{translate:none!important}
 }
+
+/* Booking cut effect: entirely decorative, never obstructs clicks or keyboard nav */
+.nizo-cut-stage{position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden;isolation:isolate}
+.nizo-cut-rail{position:absolute;left:0;width:100vw;top:0;height:2px;transform-origin:0 50%;background:linear-gradient(90deg,transparent 0%,#daff45 15%,#c556f9 65%,transparent 100%);box-shadow:0 0 20px #dcff61}
+.nizo-scissors{position:absolute;top:0;left:0;width:134px;height:134px;filter:drop-shadow(0 0 15px #a54aff);will-change:transform}
+.nizo-scissors svg{display:block;overflow:visible}
+.nizo-hair-canvas{position:absolute;inset:0;width:100%;height:100%}
+.nizo-cut-flash{position:absolute;inset:0;background:linear-gradient(90deg,transparent,#d2f94d18,#c355fa24,transparent);opacity:0;will-change:opacity}
+@media(prefers-reduced-motion:reduce){.nizo-cut-stage{display:none}}
