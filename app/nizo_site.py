@@ -41,8 +41,7 @@ DEFAULT_NAMES = (
 # Opening hours confirmed by the BARBER NIZO project contact.
 # weekday: Monday=0 through Sunday=6. Staff breaks remain owner-managed.
 CONFIRMED_PUBLIC_HOURS = [
-    {"weekday": day, "enabled": int(day != 0), "opens": "10:00",
-     "closes": "17:00" if day == 6 else "19:00"}
+    {"weekday": day, "enabled": int(day != 6), "opens": "10:00", "closes": "20:00"}
     for day in range(7)
 ]
 
