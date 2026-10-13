@@ -69,7 +69,7 @@
    updateSummary();
    if(!state.date||!state.service||!state.live){say(lang().offline,"error");return;}
    say(lang().connecting,"loading");
-   const busy=document.createElement("span");busy.className="booking-helper";busy.textContent="● ● ●";slots.append(busy);
+   const busy=document.createElement("span");busy.className="booking-helper";busy.textContent=lang().connecting;slots.append(busy);
    try{
      const response=await fetch("/api/booking?action=slots&service="+encodeURIComponent(state.service)+"&date="+encodeURIComponent(state.date),{cache:"no-store"});
      const data=await response.json();
